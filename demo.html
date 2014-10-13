@@ -84,72 +84,12 @@ dnd-dice-preset[name=n]::shadow paper-button {
 </style>
 </head>
 <body unresolved>
-<h1>D&amp;D Dice Web Components</h1>
-<p>This package contains <a href="https://www.polymer-project.org/">Polymer</a>-based
-<a href="http://webcomponents.org/">web components</a> for including
-<a href="http://www.wizards.com/dnd/">D&amp;D</a> style dice rolling into web applications.
-Use the fully-featured panel to easily add dice rolling, or use the individual components to
-build just the UI you need.
-</p>
-
-<p>Four components are included:</p>
-
-<dl>
-  <dt><a href="#demo-result">D&amp;D Dice Result</a> (<code>&lt;dnd-dice-result&gt;</code>)</dt>
-  <dd>
-    A component that shows a random result of rolling dice.  This is
-    essentially a large button that shows the result along with a text input field to
-    specify what dice to roll.  Click the button to roll again.
-  </dd>
-  
-  <dt><a href="#demo-standard">Standard D&amp;D Dice Grid</a> (<code>&lt;dnd-dice-standard&gt;</code>)</dt>
-  <dd>
-    A component that shows a grid of buttons for rolling standard D&ampD
-    dice like d6 or d20.  Clicking a button fires an event.  Quickly
-    multi-clicking a button fires an event that specifies the corresponding
-    multiple number of dice to roll.
-  </dd>
-  
-  <dt><a href="#demo-preset">Preset D&amp;D Dice Grid</a> (<code>&lt;dnd-dice-preset&gt;</code>)</dt>
-  <dd>
-    A component that shows a grid of buttons for rolling custom D&amp;D dice, like 2d4-1 or 3d6.
-    Clicking or long-clicking a button fires an event.  Clicking is often used to roll the dice,
-    while long-clicking is used to preset the button to a given custom dice specification.
-  </dd>
-  
-  <dt><a href="#demo-panel">Complete D&amp;D Dice Panel</a> (<code>&lt;dnd-dice-panel&gt;</code>)</dt>
-  <dd>
-    A component that puts together all the above into a full featured UI for rolling dice.
-  </dd>
-</dl>
-
-<h2>Dice Specification</h2>
-A dice specification is a string of the form <code>NdD+M</code>, which is interpreted to mean: roll the <code>D</code> die <code>N</code> times, summing the rolls together, and add the modifier <code>M</code> to this sum.  To subtract a modifier instead, the specification has the form <code>NdD-M</code>.  The numbers <code>N</code>, <code>D</code>, and <code>M</code> must be positive numbers from 1 to 100.  Here are some examples:
-<dl>
-  <dt>1d20</dt>
-  <dd>Roll the die with twenty sides once.  This will result in a number from 1 to 20.</dd>
-  <dt>3d6</dt>
-  <dd>Roll the die with six sides three times adding the rolls together.  This will result in a number from 3 to 18.</dd>
-  <dt>2d4-1</dt>
-  <dd>Roll the die with four sides twice adding the rolls together, then subtract 1.  This will result in a number from 1 to 7.</dd>
-</dl>
-
-Its possible to leave out parts of the specification.  For example, if <code>N</code> is omitted it defaults to 1.  If <code>D</code> is omitted it defaults to 8.  If <code>M</code> is omitted it defaults to 0.  The following are valid specifications:
-<dl>
-  <dt>d20</dt>
-  <dd>Roll the die with twenty sides once.</dd>
-  <dt>2d</dt>
-  <dd>Roll the die with eight sides twice adding the rolls together.</dd>
-  <dt>1+1</dt>
-  <dd>Roll the die with eight sides once, then add 1.  That is, if <code>D</code> is omitted then <code>d</code> can also be omitted.</dd>
-  <dt>d42</dt>
-  <dd>Roll the die with 42 sides once.  Probably not very useful for D&amp;D.</dd>
-</dl>
-
-
-<h1>Demos</h1>
+<h1>D&amp;D Dice Demos</h1>
 <p>
-Below are live demos of each component.  Check out the source of this page to see how they work.
+This page contains demos of the D&amp;D dice web components.
+Check out the source of this page to see how they work.
+For detailed information see the
+<a href="https://github.com/rogerta/dnd-dice">github project</a>.
 </p>
 
 <!-- Example of <dnd-dice-result> -->
