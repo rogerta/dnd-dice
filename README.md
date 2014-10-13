@@ -65,7 +65,7 @@ Roll the die with eight sides twice adding the rolls together.
 Roll the die with eight sides once, then add 1. That is, if **D** is omitted
 then **d** can also be omitted.
 
-**d4**2
+**d42**
 Roll the die with 42 sides once. Probably not very useful for D&D.
 
 # Demos
