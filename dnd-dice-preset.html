@@ -1,0 +1,154 @@
+<!--
+@group D&D Dice
+
+<dnd-dice-preset> shows a grid of buttons for throwing custom dice specifications,
+like 2d4-1 or 3d6.  The rows and columns of the grid can be specified with the
+|rows| and |cols| attributes (4x4 by default).
+
+Clicking a button fires a 'spec' event.  The event |detail| contains the dice
+specification attached to the button.  Long clicking a button (clicking the
+button and holding it down for 1 second) fires a 'setspec' event.  This can
+be used to attach a dice specification to the button with the |setSpec()|
+method.  The |detail| of the 'setspec' even can be passed as the |sender|
+parameter of |setSpec()|.
+
+<dnd-dice-preset> persists attached dice specifications to local storage.  When
+the page is reloaded, so are the dice specifications.  By default, all
+instances of <dnd-dice-preset> will load from the same persisted data.
+To use a different specifications with different presets, use different
+|name| attributes.
+
+Examples:
+
+  <dnd-dice-result rows="1" cols="3"></dnd-dice-result>
+  <dnd-dice-result name="demo"></dnd-dice-result>
+
+The paper button elements can be styled using standard mechanisms.
+For example:
+
+  #my-dnd-dice-preset::shadow paper-button {
+    /* styles for paper-button */
+  }
+  
+@element dnd-dice-preset
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-localstorage/core-localstorage.html">
+<link rel="import" href="../paper-button/paper-button.html">
+
+<polymer-element name="dnd-dice-preset">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+    [row]+[row] {
+      margin-top: 0.5em;
+    }
+    paper-button {
+      text-transform: none;
+      width: 5em;
+    }
+    core-localstorage+paper-button {
+      margin-left: 0.5em;
+    }
+    </style>
+    <template repeat="{{_, r in _rows}}">
+      <div horizontal layout row>
+      <template repeat="{{_, c in _cols}}">
+        <paper-button id="{{name}}-{{r}}-{{c}}" raisedButton
+            label="{{_._values[r*cols+c]}}"
+            on-click="{{fireSpec}}" on-mousedown="{{onMouseDown}}"
+            on-mouseup="{{onMouseUp}}"></paper-button>
+        <core-localstorage name="{{name}}_{{r}}_{{c}}"
+            value="{{_._values[r*cols+c]}}"></core-localstorage>
+      </template>
+      </div>
+    </template>
+  </template>
+  <script>
+    (function() {
+      var _pendingAsync = undefined;
+
+      Polymer({
+        publish: {
+          rows: 4,
+          cols: 4,
+          name: 'dice-preset'
+        },
+
+        // These arrays have length equal to their corresponding published
+        // property.  Each element is an integer starting at zero and
+        // incrementing.  This is to support templating, is there a better way?
+        _rows: undefined,
+        _cols: undefined,
+        
+        // This property is used as a model for the localstorage/button label
+        // binding.
+        _values: undefined,
+
+        rowsChanged: function(oldValue, newValue) {
+          this._recalcMatrix();
+        },
+
+        colsChanged: function(oldValue, newValue) {
+          this._recalcMatrix();
+        },
+
+        fireSpec: function(e, detail, sender) {
+          this.fire('spec', sender.label);
+        },
+
+        _recalcMatrix: function() {
+          this.job('recalc', function() {
+            var newRows = [];
+            for (var i = 0; i < this.rows; ++i)
+              newRows[i] = this;
+            var newCols = [];
+            for (var i = 0; i < this.cols; ++i)
+              newCols[i] = this;
+              
+            // Its necessary to set the initial values so that when there is
+            // no local storage data, the buttons still render.
+            var values = [];
+            var max = this.rows * this.cols;
+            var length = this._values.length;
+            for (var i = 0; i < max; ++i)
+              values[i] = i < length ? this._values[i] : '\u00a0';
+  
+            this._values = values;
+            this._rows = newRows;
+            this._cols = newCols;
+          });
+        },
+  
+        onMouseDown: function(e, detail, sender) {
+          _pendingAsync = sender;
+          this.async(function() {
+            if (sender != _pendingAsync)
+              return;
+          this.fire('setspec', sender);
+          }, undefined, 1000);
+        },
+
+        onMouseUp: function(e, detail, sender) {
+          _pendingAsync = undefined;
+        },
+
+        setSpec: function(sender, spec) {
+          sender.label = spec;
+        },
+
+        created: function() {
+          this._values = [];
+        },
+
+        ready: function() {
+          this._recalcMatrix();
+        }
+      });
+    })();
+  </script>
+</polymer-element>

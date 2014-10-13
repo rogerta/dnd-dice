@@ -1,0 +1,98 @@
+<!--
+@group D&D Dice
+
+<dnd-dice-standard> shows a grid of paper buttons that can roll the
+standard D&D dice.  Included are buttons to increment and decrement
+the dice modifier.  Normally, <dnd-dice-standard> is used together with
+a <dnd-dice-result> component.
+
+The paper button elements can be styled using standard mechanisms.
+For example:
+
+  #my-dnd-dice-standard::shadow paper-button {
+    /* styles for paper-button */
+  }
+  
+@element dnd-dice-standard
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-button/paper-button.html">
+
+<polymer-element name="dnd-dice-standard">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+    [row]+[row] {
+      margin-top: 0.5em;
+    }
+    paper-button {
+      text-transform: none;
+    }
+    [die] {
+      width: 5em;
+    }
+    [die]+[die] {
+      margin-left: 0.5em;
+    }
+    [mod]+[mod] {
+      margin-left: 0.5em;
+    }
+    </style>
+    <div horizontal layout row>
+      <paper-button raisedButton die label="d4" on-click="{{fireDie}}">
+      </paper-button>
+      <paper-button raisedButton die label="d6" on-click="{{fireDie}}">
+      </paper-button>
+    </div>
+    <div horizontal layout row>
+      <paper-button raisedButton die label="d8" on-click="{{fireDie}}">
+      </paper-button>
+      </paper-button>
+      <paper-button raisedButton die label="d10" on-click="{{fireDie}}">
+      </paper-button>
+    </div>
+    <div horizontal layout row>
+      <paper-button raisedButton die label="d12" on-click="{{fireDie}}">
+      </paper-button>
+      <paper-button raisedButton die label="d20" on-click="{{fireDie}}">
+      </paper-button>
+    </div>
+    <div horizontal layout row>
+      <paper-button raisedButton die label="d100" on-click="{{fireDie}}">
+      </paper-button>
+      <div die horizontal layout>
+        <paper-button raisedButton mod plus flex label="+"
+            on-click="{{fireMod}}"></paper-button>
+        <paper-button raisedButton mod minus flex label="-"
+            on-click="{{fireMod}}"></paper-button>
+      </div>
+    </div>
+  </template>
+  <script>
+    (function() {
+      var _lastClickTime = undefined;
+      var _lastDie = undefined;
+      var _lastCount = 1;
+      Polymer({
+        fireDie: function(e, detail, sender) {
+          if ((e.timeStamp - _lastClickTime < 400) &&
+              (_lastDie == sender.label)) {
+            ++_lastCount;
+          } else {
+            _lastDie = sender.label;
+            _lastCount = 1;
+          }
+          this.fire('die', _lastCount + sender.label);
+          _lastClickTime = e.timeStamp;
+        },
+        fireMod: function(e, detail, sender) {
+            this.fire(sender.label == '+' ? 'inc' : 'dec');
+        }
+      });
+    })();
+  </script>
+</polymer-element>

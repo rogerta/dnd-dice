@@ -1,0 +1,12 @@
+{
+  "name": "dnd-dice",
+  "version": 0.0.1,
+  "private": false,
+  "dependencies": {
+    "polymer": "Polymer/polymer#master",
+    "core-localstorage": "Polymer/core-localstorage#master",
+    "paper-button": "Polymer/paper-button#master",
+    "paper-input": "Polymer/paper-input#master"
+  }
+}
+

@@ -1,0 +1,188 @@
+<!--
+@group D&D Dice
+
+<dnd-dice-result> shows the result of D&D dice rolls.  The user can type
+dice specifications such as 3d6 or 2d4-1 and the element will calculate
+a random value and display it.
+
+The element consists of two UI elements arranged vertically:
+
+1/ A <paper-input> element to type dice specification.
+2/ A <paper-button> to show the last random value rolled.
+   The button can be pressed to re-roll the dice.
+
+The input element can be hidden with the |hideInput| attribute.
+
+The |spec| attribute sets the initial dice specification and can also be
+changed programmatically.  If |spec| changes, the dice are re-rolled
+and the value displayed in the button.
+
+<dnd-dice-result> elements provide a |roll()| method to programmatic
+re-roll the dice specification.  |inc()| and |dec()| methods can be called
+to increment or decrement the dice specification modifier.
+
+Examples:
+
+    <dnd-dice-result></dnd-dice-result>
+    <dnd-dice-result spec="3d6"></dnd-dice-result>
+    <dnd-dice-result hideInput></dnd-dice-result>
+
+<dnd-dice-result> elements can be resized using width and height styles.  If
+the size becomes too small, it may also be necessary to adjust the font size
+of the button.  The default font size is 600%.
+
+  #my-dnd-dice-result::shadow {
+    width: 400px;
+    height: 300px;
+  }
+  #my-dnd-dice-result::shadow #button::shadow #content {
+    font-size: 400%;  /* optional, default is 600% if not set */
+  }
+
+The paper input and button elements can be styled using standard mechanisms.
+For example:
+
+  #my-dnd-dice-result::shadow #input {
+    /* styles for paper-input */
+  }
+  #my-dnd-dice-result::shadow #button {
+    /* styles for paper-button */
+  }
+  
+@element dnd-dice-result
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-input/paper-input.html">
+
+<polymer-element name="dnd-dice-result">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+    }
+    paper-input {
+      width: 100%;
+      padding-top: 0;
+    }
+    paper-button::shadow #clip, paper-button::shadow #content {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+    paper-button::shadow #content {
+      font-size: 600%;
+    }
+    paper-button::shadow #content span {
+      margin: 0;
+    }
+    
+    </style>
+    <template if="{{!hideInput}}">
+      <paper-input
+          id="input" pattern="(\d*)d?(\d*)([\+\-]\d+)?"
+          label="Enter dice to roll"
+          error="Use: XdN+M"
+          value="{{spec}}" on-change="{{roll}}">
+      </paper-input>
+    </template>
+    <paper-button id="button" raisedButton flex on-click="{{roll}}"
+        label="&nbsp;"></paper-button>
+  </template>
+  <script>
+    (function() {
+      const PATTERN = /(\d*)d?(\d*)([\+\-]\d+)?/i;
+
+      function parseSpec(spec) {
+        var result = PATTERN.exec(spec);
+        if (!result || !result[0])
+          return undefined;
+
+        result.shift();
+        result[0] = result[0] ? parseInt(result[0]) : 1;
+        result[1] = result[1] ? parseInt(result[1]) : 8;
+        result[2] = result[2] ? parseInt(result[2]) : 0;
+      
+        if (result[0] < 1 || result[0] > 99 ||
+            result[1] > 100 ||
+            result[0] < -99 || result[0] > 99) {
+          return undefined;
+        }
+      
+        return result;
+      }
+
+      function unparseSpec(parsed) {
+        var spec = parsed[0] + 'd' + parsed[1];
+        var mod = parsed[2];
+        if (mod > 0) {
+          spec += '+' + mod;
+        } else if (mod < 0) {
+          spec += + mod;
+        }
+        return spec;
+      }
+
+      function roll(parsed) {
+        if (!parsed)
+          return '\u2639';
+
+        // Each time through the loop will add a number from 0..n-1.
+        // Since we want 1..n, we start total with the count.
+        var count = parsed[0];
+        var die = parsed[1];
+        var total = count;
+        for (var i = 0; i < count; ++i) {
+          total += Math.floor(Math.random() * die);
+        }
+        total += parsed[2];
+        return total;
+      }
+
+      Polymer({
+        publish: {
+          spec: '',
+          hideInput: false
+        },
+
+        specChanged: function(oldValue, newValue) {
+          this.roll();
+        },
+
+        roll: function() {
+          this.$.button.label = roll(parseSpec(this.spec));
+        },
+
+        inc: function() {
+          this._mod(1);
+        },
+
+        dec: function() {
+          this._mod(-1);
+        },
+
+        _mod: function(mod) {
+          var parsed = parseSpec(this.spec);
+          if (parsed) {
+            parsed[2] += mod;
+            this.spec = unparseSpec(parsed);
+            this.$.button.label = roll(parsed);
+          }
+        },
+
+        domReady: function() {
+          // This hack centers the text vertically.  In order for the span
+          // selector to work, the label of the button must not be initially
+          // empty.  This is why its initialized to &nbsp;.
+          var content = this.$.button.shadowRoot.querySelector('#content');
+          var span = content.querySelector('span');
+          span.style.lineHeight = content.clientHeight + 'px';
+        }
+      });
+    })();
+  </script>
+</polymer-element>

@@ -1,0 +1,58 @@
+<!--
+@group D&D Dice
+
+<dnd-dice-panel> puts all the other components together into a full UI for
+rolling dice and saving presets.  See the documentation for the other
+components for further details.
+  
+@element dnd-dice-panel
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="dnd-dice-preset.html">
+<link rel="import" href="dnd-dice-result.html">
+<link rel="import" href="dnd-dice-standard.html">
+
+<polymer-element name="dnd-dice-panel">
+  <template>
+    <style>
+    :host {
+      display: flex;
+      flex-direction: column;
+      padding: 0.4em;
+      width: calc(4 * 5em + 3 * 0.5em);
+    }
+    #result {
+      margin-left: 0.5em;
+    }
+    #preset {
+      margin-top: calc(2 * 0.5em);
+    }
+    </style>
+    <div horizontal layout>
+      <dnd-dice-standard id="standard" on-die="{{onDieChanged}}"
+          on-inc="{{onInc}}" on-dec="{{onDec}}"></dnd-dice-standard>
+      <dnd-dice-result flex id="result"></dnd-dice-result>
+    </div>
+    <dnd-dice-preset id="preset" resultselector="#result"
+        on-spec="{{onDieChanged}}" on-setspec="{{onSetSpec}}"></dnd-dice-preset>
+  </template>
+  <script>
+    (function() {
+      Polymer({
+        onDieChanged: function(e) {
+          this.$.result.spec = e.detail;
+        },
+        onInc: function(e) {
+          this.$.result.inc();
+        },
+        onDec: function(e) {
+          this.$.result.dec();
+        },
+        onSetSpec: function(e) {
+          this.$.preset.setSpec(e.detail, this.$.result.spec);
+        },
+      });
+    })();
+  </script>
+</polymer-element>
