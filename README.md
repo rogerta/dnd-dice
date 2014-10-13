@@ -30,7 +30,7 @@ a given custom dice specification.
 ### Complete D&D Dice Panel (`<dnd-dice-panel>`)
 
 A component that puts together all the above into a full featured UI for
-A rolling dice.
+rolling dice.
 
 ## Dice Specification
 
