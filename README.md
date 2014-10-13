@@ -1,6 +1,10 @@
 # D&D Dice Web Components
 
-This package contains Polymer-based web components for including D&D style dice rolling into web applications. Use the fully-featured panel to easily add dice rolling, or use the individual components to build just the UI you need.
+This package contains [Polymer](https://www.polymer-project.org/)-based
+[web components](http://webcomponents.org/) for including
+[D&D](http://www.wizards.com/dnd/) style dice rolling into web applications.
+Use the fully-featured panel to easily add dice rolling, or use the individual
+components to build just the UI you need.
 
 Four components are included:
 
