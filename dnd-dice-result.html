@@ -168,7 +168,7 @@ For example:
         },
 
         roll: function() {
-          this.$.button.label = roll(parseSpec(this.spec));
+          this.$.button.label = roll(parseSpec(this.spec)).toString();
         },
 
         setSpec: function(spec) {
