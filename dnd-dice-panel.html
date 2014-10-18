@@ -55,7 +55,7 @@ components for further details.
     (function() {
       Polymer({
         onDieChanged: function(e) {
-          this.$.result.spec = e.detail;
+          this.$.result.setSpec(e.detail);
         },
         onInc: function(e) {
           this.$.result.inc();
