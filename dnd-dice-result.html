@@ -29,7 +29,8 @@ The input element can be hidden with the |hideInput| attribute.
 
 The |spec| attribute sets the initial dice specification and can also be
 changed programmatically.  If |spec| changes, the dice are re-rolled
-and the value displayed in the button.
+and the value displayed in the button.  To force a re-roll even if the
+specification does not change, use the |setSpec(spec)| method instead.
 
 <dnd-dice-result> elements provide a |roll()| method to programmatic
 re-roll the dice specification.  |inc()| and |dec()| methods can be called
@@ -94,7 +95,6 @@ For example:
     paper-button::shadow #content span {
       margin: 0;
     }
-    
     </style>
     <template if="{{!hideInput}}">
       <paper-input
@@ -169,6 +169,11 @@ For example:
 
         roll: function() {
           this.$.button.label = roll(parseSpec(this.spec));
+        },
+
+        setSpec: function(spec) {
+          this.spec = spec;
+          this.roll();
         },
 
         inc: function() {

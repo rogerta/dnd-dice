@@ -113,7 +113,7 @@ For detailed information see the
   <dnd-dice-result id="result1"></dnd-dice-result>
   <div class="controls">
     <button onclick="roll3d6()">3d6</button>
-    <button onclick="roll2d4()">2d4</button>
+    <button onclick="roll2d4()">2d4 (using setSpec())</button>
     <button onclick="rollNow()">Roll!</button>
     <input type="checkbox" name="hide" value="yes"
         onchange="showOrHideInput()">Hide Input</input>
@@ -160,7 +160,7 @@ function roll3d6() {
 }
 function roll2d4() {
   var result = document.querySelector('#result1');
-  result.spec = '2d4';
+  result.setSpec('2d4');
 }
 function showOrHideInput() {
   var result = document.querySelector('dnd-dice-result');
