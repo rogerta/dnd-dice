@@ -168,12 +168,21 @@ For example:
         },
 
         roll: function() {
-          this.$.button.label = roll(parseSpec(this.spec)).toString();
+          if (this.spec) {
+            this.$.button.label = roll(parseSpec(this.spec)).toString();
+          } else {
+            this.$.button.label = '';
+          }
         },
 
         setSpec: function(spec) {
-          this.spec = spec;
-          this.roll();
+          // Only force a roll if the spec will not change, otherwise the
+          // dice will be rolled twice.
+          if (spec == this.spec) {
+            this.roll();
+          } else {
+            this.spec = spec.replace('\u00a0', ' ').trim();;
+          }
         },
 
         inc: function() {
