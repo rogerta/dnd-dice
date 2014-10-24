@@ -53,9 +53,12 @@ components for further details.
   </template>
   <script>
     (function() {
+      var presetChanged = false;
       Polymer({
         onDieChanged: function(e) {
-          this.$.result.setSpec(e.detail);
+          if (!presetChanged)
+            this.$.result.setSpec(e.detail);
+          presetChanged = false;
         },
         onInc: function(e) {
           this.$.result.inc();
@@ -64,8 +67,11 @@ components for further details.
           this.$.result.dec();
         },
         onSetSpec: function(e) {
-          this.$.preset.setSpec(e.detail, this.$.result.spec);
-        },
+          presetChanged = true;
+          var spec = this.$.result.getValidSpec();
+          if (spec)
+            this.$.preset.setSpec(e.detail, spec);
+        }
       });
     })();
   </script>

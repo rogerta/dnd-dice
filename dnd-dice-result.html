@@ -181,8 +181,14 @@ For example:
           if (spec == this.spec) {
             this.roll();
           } else {
-            this.spec = spec.replace('\u00a0', ' ').trim();;
+            // Remove any &nbsp; and trim out whitespace.
+            this.spec = spec.replace('\u00a0', ' ').trim();
           }
+        },
+
+        getValidSpec: function() {
+          var parsed = parseSpec(this.spec);
+          return parsed ? this.spec : undefined;
         },
 
         inc: function() {
