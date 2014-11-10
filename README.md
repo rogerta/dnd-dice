@@ -70,5 +70,5 @@ Roll the die with 42 sides once. Probably not very useful for D&D.
 
 # Demos
 
-See [demos of all the components](http://dnd-tools.appspot.com/components/dnd-dice/demo.html).
+See [demos of all the components](http://dnd-tools.appspot.com/components/dnd-dice/demo.html).  A much [fancier demo](http://dnd-tools.appspot.com/dice) also exists.
 

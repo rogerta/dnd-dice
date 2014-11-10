@@ -64,6 +64,8 @@ For example:
     paper-button {
       text-transform: none;
       width: 5em;
+      min-width: 1em;
+      margin: 0px;
     }
     core-localstorage+paper-button {
       margin-left: 0.5em;
@@ -72,10 +74,9 @@ For example:
     <template repeat="{{_, r in _rows}}">
       <div horizontal layout row>
       <template repeat="{{_, c in _cols}}">
-        <paper-button id="{{name}}-{{r}}-{{c}}" raisedButton
-            label="{{_._values[r*cols+c]}}"
-            on-click="{{fireSpec}}" on-mousedown="{{onMouseDown}}"
-            on-mouseup="{{onMouseUp}}"></paper-button>
+        <paper-button id="{{name}}-{{r}}-{{c}}" raised
+            on-tap="{{fireSpec}}" on-mousedown="{{onMouseDown}}"
+            on-mouseup="{{onMouseUp}}">{{_._values[r*cols+c]}}</paper-button>
         <core-localstorage name="{{name}}_{{r}}_{{c}}"
             value="{{_._values[r*cols+c]}}"></core-localstorage>
       </template>
@@ -99,7 +100,7 @@ For example:
         _rows: undefined,
         _cols: undefined,
         
-        // This property is used as a model for the localstorage/button label
+        // This property is used as a model for the localstorage/button text
         // binding.
         _values: undefined,
 
@@ -112,7 +113,7 @@ For example:
         },
 
         fireSpec: function(e, detail, sender) {
-          this.fire('spec', sender.label);
+          this.fire('spec', sender.innerText);
         },
 
         _recalcMatrix: function() {
@@ -152,7 +153,10 @@ For example:
         },
 
         setSpec: function(sender, spec) {
-          sender.label = spec;
+          // There is an empty text element between the paper-button and
+          // core-localstorage elements due to the carriage return between
+          // them, hence the second next sibling.
+          sender.nextSibling.nextSibling.value = spec;
         },
 
         created: function() {

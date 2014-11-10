@@ -45,6 +45,8 @@ For example:
     }
     paper-button {
       text-transform: none;
+      margin: 0px;
+      min-width: 1em;
     }
     [die] {
       width: 5em;
@@ -57,32 +59,24 @@ For example:
     }
     </style>
     <div horizontal layout row>
-      <paper-button raisedButton die label="d4" on-click="{{fireDie}}">
-      </paper-button>
-      <paper-button raisedButton die label="d6" on-click="{{fireDie}}">
-      </paper-button>
+      <paper-button raised die on-tap="{{fireDie}}">d4</paper-button>
+      <paper-button raised die on-tap="{{fireDie}}">d6</paper-button>
     </div>
     <div horizontal layout row>
-      <paper-button raisedButton die label="d8" on-click="{{fireDie}}">
-      </paper-button>
-      </paper-button>
-      <paper-button raisedButton die label="d10" on-click="{{fireDie}}">
-      </paper-button>
+      <paper-button raised die on-tap="{{fireDie}}">d8</paper-button>
+      <paper-button raised die on-tap="{{fireDie}}">d10</paper-button>
     </div>
     <div horizontal layout row>
-      <paper-button raisedButton die label="d12" on-click="{{fireDie}}">
-      </paper-button>
-      <paper-button raisedButton die label="d20" on-click="{{fireDie}}">
-      </paper-button>
+      <paper-button raised die on-tap="{{fireDie}}">d12</paper-button>
+      <paper-button raised die on-tap="{{fireDie}}">d20</paper-button>
     </div>
     <div horizontal layout row>
-      <paper-button raisedButton die label="d100" on-click="{{fireDie}}">
-      </paper-button>
+      <paper-button raised die on-tap="{{fireDie}}">d100</paper-button>
       <div die horizontal layout>
-        <paper-button raisedButton mod plus flex label="+"
-            on-click="{{fireMod}}"></paper-button>
-        <paper-button raisedButton mod minus flex label="-"
-            on-click="{{fireMod}}"></paper-button>
+        <paper-button raised mod plus flex
+            on-tap="{{fireMod}}">+</paper-button>
+        <paper-button raised mod minus flex
+            on-tap="{{fireMod}}">-</paper-button>
       </div>
     </div>
   </template>
@@ -94,17 +88,17 @@ For example:
       Polymer({
         fireDie: function(e, detail, sender) {
           if ((e.timeStamp - _lastClickTime < 400) &&
-              (_lastDie == sender.label)) {
+              (_lastDie == sender.innerText)) {
             ++_lastCount;
           } else {
-            _lastDie = sender.label;
+            _lastDie = sender.innerText;
             _lastCount = 1;
           }
-          this.fire('die', _lastCount + sender.label);
+          this.fire('die', _lastCount + sender.innerText);
           _lastClickTime = e.timeStamp;
         },
         fireMod: function(e, detail, sender) {
-            this.fire(sender.label == '+' ? 'inc' : 'dec');
+            this.fire(sender.innerText == '+' ? 'inc' : 'dec');
         }
       });
     })();

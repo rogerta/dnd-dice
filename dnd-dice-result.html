@@ -80,20 +80,22 @@ For example:
     }
     paper-input {
       width: 100%;
-      padding-top: 0;
     }
-    paper-button::shadow #clip, paper-button::shadow #content {
+    paper-input::shadow paper-input-decorator {
+      padding-top: 0.2em;
+      padding-bottom: 1em;
+    }
+    paper-button {
+      margin: 0px;
+    }
+    paper-button::shadow .button-content {
       position: absolute;
       top: 0;
       bottom: 0;
       left: 0;
       right: 0;
-    }
-    paper-button::shadow #content {
-      font-size: 600%;
-    }
-    paper-button::shadow #content span {
-      margin: 0;
+      font-size: 500%;
+      padding: 0px;
     }
     </style>
     <template if="{{!hideInput}}">
@@ -104,8 +106,7 @@ For example:
           value="{{spec}}" on-change="{{roll}}">
       </paper-input>
     </template>
-    <paper-button id="button" raisedButton flex on-click="{{roll}}"
-        label="&nbsp;"></paper-button>
+    <paper-button id="button" raised flex on-tap="{{roll}}">&nbsp;</paper-button>
   </template>
   <script>
     (function() {
@@ -169,9 +170,9 @@ For example:
 
         roll: function() {
           if (this.spec) {
-            this.$.button.label = roll(parseSpec(this.spec)).toString();
+            this.$.button.innerText = roll(parseSpec(this.spec)).toString();
           } else {
-            this.$.button.label = '';
+            this.$.button.innerText = '';
           }
         },
 
@@ -204,17 +205,17 @@ For example:
           if (parsed) {
             parsed[2] += mod;
             this.spec = unparseSpec(parsed);
-            this.$.button.label = roll(parsed);
+            this.$.button.innerText = roll(parsed);
           }
         },
 
         domReady: function() {
           // This hack centers the text vertically.  In order for the span
-          // selector to work, the label of the button must not be initially
-          // empty.  This is why its initialized to &nbsp;.
-          var content = this.$.button.shadowRoot.querySelector('#content');
-          var span = content.querySelector('span');
-          span.style.lineHeight = content.clientHeight + 'px';
+          // selector to work, the text content of the button must not be
+          // initially empty.  This is why its initialized to &nbsp;.  Also,
+          // it's important for the padding of |.button-content| to be zero.
+          var c = this.$.button.shadowRoot.querySelector('.button-content');
+          c.style.lineHeight = c.clientHeight + 'px';
         }
       });
     })();
