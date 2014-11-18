@@ -51,7 +51,7 @@ result in a number from 3 to 18.
 Roll the die with four sides twice adding the rolls together, then subtract 1.
 This will result in a number from 1 to 7.
 
-Its possible to leave out parts of the specification. For example, if **N** is
+It's possible to leave out parts of the specification. For example, if **N** is
 omitted it defaults to 1. If **D** is omitted it defaults to 8. If **M** is
 omitted it defaults to 0. The following are valid specifications:
 
