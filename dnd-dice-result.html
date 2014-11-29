@@ -63,13 +63,14 @@ For example:
   #my-dnd-dice-result::shadow #button {
     /* styles for paper-button */
   }
-  
+
 @element dnd-dice-result
 -->
 
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="dnd-dice-helper.html">
 
 <polymer-element name="dnd-dice-result">
   <template>
@@ -107,117 +108,69 @@ For example:
       </paper-input>
     </template>
     <paper-button id="button" raised flex on-tap="{{roll}}">&nbsp;</paper-button>
+    <dnd-dice-helper id="helper"></dnd-dice-helper>
   </template>
   <script>
-    (function() {
-      const PATTERN = /(\d*)d?(\d*)([\+\-]\d+)?/i;
+    Polymer({
+      publish: {
+        spec: '',
+        hideInput: false
+      },
 
-      function parseSpec(spec) {
-        var result = PATTERN.exec(spec);
-        if (!result || !result[0])
-          return undefined;
+      specChanged: function(oldValue, newValue) {
+        this.roll();
+      },
 
-        result.shift();
-        result[0] = result[0] ? parseInt(result[0]) : 1;
-        result[1] = result[1] ? parseInt(result[1]) : 8;
-        result[2] = result[2] ? parseInt(result[2]) : 0;
-      
-        if (result[0] < 1 || result[0] > 99 ||
-            result[1] > 100 ||
-            result[0] < -99 || result[0] > 99) {
-          return undefined;
+      roll: function() {
+        if (this.spec) {
+          this.$.button.innerText =
+              this.$.helper.roll(this.$.helper.parseSpec(this.spec)).toString();
+        } else {
+          this.$.button.innerText = '';
         }
-      
-        return result;
-      }
+      },
 
-      function unparseSpec(parsed) {
-        var spec = parsed[0] + 'd' + parsed[1];
-        var mod = parsed[2];
-        if (mod > 0) {
-          spec += '+' + mod;
-        } else if (mod < 0) {
-          spec += + mod;
-        }
-        return spec;
-      }
-
-      function roll(parsed) {
-        if (!parsed)
-          return '\u2639';
-
-        // Each time through the loop will add a number from 0..n-1.
-        // Since we want 1..n, we start total with the count.
-        var count = parsed[0];
-        var die = parsed[1];
-        var total = count;
-        for (var i = 0; i < count; ++i) {
-          total += Math.floor(Math.random() * die);
-        }
-        total += parsed[2];
-        return total;
-      }
-
-      Polymer({
-        publish: {
-          spec: '',
-          hideInput: false
-        },
-
-        specChanged: function(oldValue, newValue) {
+      setSpec: function(spec) {
+        // Only force a roll if the spec will not change, otherwise the
+        // dice will be rolled twice.
+        if (spec == this.spec) {
           this.roll();
-        },
-
-        roll: function() {
-          if (this.spec) {
-            this.$.button.innerText = roll(parseSpec(this.spec)).toString();
-          } else {
-            this.$.button.innerText = '';
-          }
-        },
-
-        setSpec: function(spec) {
-          // Only force a roll if the spec will not change, otherwise the
-          // dice will be rolled twice.
-          if (spec == this.spec) {
-            this.roll();
-          } else {
-            // Remove any &nbsp; and trim out whitespace.
-            this.spec = spec.replace('\u00a0', ' ').trim();
-          }
-        },
-
-        getValidSpec: function() {
-          var parsed = parseSpec(this.spec);
-          return parsed ? this.spec : undefined;
-        },
-
-        inc: function() {
-          this._mod(1);
-        },
-
-        dec: function() {
-          this._mod(-1);
-        },
-
-        _mod: function(mod) {
-          var parsed = parseSpec(this.spec);
-          if (parsed) {
-            parsed[2] += mod;
-            this.spec = unparseSpec(parsed);
-            this.$.button.innerText = roll(parsed);
-          }
-        },
-
-        domReady: function() {
-          // This hack centers the text vertically.  In order for the span
-          // selector to work, the text content of the button must not be
-          // initially empty.  This is why its initialized to &nbsp;.  Also,
-          // it's important for the padding of |.button-content| to be zero.
-          var c = this.$.button.shadowRoot.querySelector('.button-content');
-          c.style.lineHeight = c.clientHeight + 'px';
+        } else {
+          // Remove any &nbsp; and trim out whitespace.
+          this.spec = spec.replace('\u00a0', ' ').trim();
         }
-      });
-    })();
+      },
+
+      getValidSpec: function() {
+        var parsed = this.$.helper.parseSpec(this.spec);
+        return parsed ? this.spec : undefined;
+      },
+
+      inc: function() {
+        this._mod(1);
+      },
+
+      dec: function() {
+        this._mod(-1);
+      },
+
+      _mod: function(mod) {
+        var parsed = this.$.helper.parseSpec(this.spec);
+        if (parsed) {
+          parsed[2] += mod;
+          this.spec = this.$.helper.unparseSpec(parsed);
+          this.$.button.innerText = this.$.helper.roll(parsed);
+        }
+      },
+
+      domReady: function() {
+        // This hack centers the text vertically.  In order for the span
+        // selector to work, the text content of the button must not be
+        // initially empty.  This is why its initialized to &nbsp;.  Also,
+        // it's important for the padding of |.button-content| to be zero.
+        var c = this.$.button.shadowRoot.querySelector('.button-content');
+        c.style.lineHeight = c.clientHeight + 'px';
+      }
+    });
   </script>
 </polymer-element>
