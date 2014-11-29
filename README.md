@@ -38,7 +38,7 @@ A dice specification is a string of the form **NdD+M**, which is interpreted to
 mean: roll the **D** die **N** times, summing the rolls together, and add the
 modifier **M** to this sum. To subtract a modifier instead, the specification
 has the form **NdD-M**. The numbers **N**, **D**, and **M** must be positive
-numbers from 1 to 100. Here are some examples:
+numbers from 1 to 100 (**N** may also be zero). Here are some examples:
 
 **1d20**
 Roll the die with twenty sides once. This will result in a number from 1 to 20.
@@ -64,6 +64,10 @@ Roll the die with eight sides twice adding the rolls together.
 **1+1**
 Roll the die with eight sides once, then add 1. That is, if **D** is omitted
 then **d** can also be omitted.
+
+**0+1**
+Always results in the number 1.  The die, if specified, is unimportant.
+For example, a blowgun always does 1 damage.
 
 **d42**
 Roll the die with 42 sides once. Probably not very useful for D&D.

@@ -57,7 +57,7 @@ Use the helper like this:
           result[1] = result[1] ? parseInt(result[1]) : 8;
           result[2] = result[2] ? parseInt(result[2]) : 0;
 
-          if (result[0] < 1 || result[0] > 99 ||
+          if (result[0] < 0 || result[0] > 99 ||
               result[1] > 100 ||
               result[0] < -99 || result[0] > 99) {
             return undefined;
