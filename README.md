@@ -6,7 +6,7 @@ This package contains [Polymer](https://www.polymer-project.org/)-based
 Use the fully-featured panel to easily add dice rolling, or use the individual
 components to build just the UI you need.
 
-Four components are included:
+Five components are included:
 
 ### D&D Dice Result (`<dnd-dice-result>`)
 
@@ -27,12 +27,16 @@ A component that shows a grid of buttons for rolling custom D&D dice, like
 often used to roll the dice, while long-clicking is used to preset the button to
 a given custom dice specification.
 
+### D&D Dice Helper (`<dnd-dice-helper>`)
+A component that contains helper functions to parse and unparse dice
+specifications as well as generating random rolls of dice.
+
 ### Complete D&D Dice Panel (`<dnd-dice-panel>`)
 
 A component that puts together all the above into a full featured UI for
 rolling dice.
 
-## Dice Specification
+## Simple Dice Specification
 
 A dice specification is a string of the form **NdD+M**, which is interpreted to
 mean: roll the **D** die **N** times, summing the rolls together, and add the
@@ -72,7 +76,44 @@ For example, a blowgun always does 1 damage.
 **d42**
 Roll the die with 42 sides once. Probably not very useful for D&D.
 
+## Advanced Dice Specification
+
+In some cases we don't want all dice rolled to count.  For example, when rolling
+ability scores, we roll 4d6 but keep only the top 3 dice.  Or when rolling
+advantage or disadvantge, we roll d20 twice and keep the higher or lower die,
+respectively.
+
+To handle these cases, append the upper or lower modifier to a simple dice
+specification.  Use **NdD+MuS** or **NdD+MlS** respectively, where **S** is
+a positive number smaller than **N**.  **S** represents the subset
+of dice that should count.
+
+Here are some examples:
+
+**4d6u3**
+Roll the die with six sides four times, keeping only the three largest numbers.
+Add the largest numbers together. This will result in a number from 3 to 18.
+
+**2d20u1**
+Roll the die with twenty sides twice, keeping only the higher value.  This
+would be like rolling an ability check with advantage.
+
+**2d20l1**
+Roll the die with twenty sides twice, keeping only the lower value.  This
+would be like rolling an ability check with disadvantage.
+
+**S** can be left out if it's value is equal to **N-1**.  The following three
+dice specifications are equivalent to the previous three, respectively:
+
+**4d6u**  
+**2d20u**  
+**2d20l**  
+
 # Demos
 
-See [demos of all the components](http://dnd-tools.appspot.com/components/dnd-dice/demo.html).  A much [fancier demo](http://dnd-tools.appspot.com/dice) also exists.
+See [demos of all the components](http://dnd-tools.appspot.com/components/dnd-dice/demo.html).
+A much [fancier demo](http://dnd-tools.appspot.com/dice) also exists.
+
+[Unit tests](http://dnd-tools.appspot.com/tests) for parsing and unparsing
+dice are available.
 

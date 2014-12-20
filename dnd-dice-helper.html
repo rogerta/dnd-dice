@@ -18,13 +18,13 @@ limitations under the License.
 <dnd-dice-helper> contains helper functions to parse and unparse dice
 specifications as well as generating random rolls of dice.
 
-parseSpec() takes a string of the form "NdD+M" and converts it to an array
-with three elements: [N,D,M].
+parseSpec() takes a string of the form "NdD+MuS" and converts it to an array
+with three elements: [N,D,M,S].
 
-unparseSpec() takes an array of three elements [N,D,M] and converts it to a
-string of the form "NdD+M".
+unparseSpec() takes an array of elements [N,D,M,S] and converts it to a
+string of the form "NdD+MuS".
 
-roll() takes an array of three elements [N,D,M] and generates one random
+roll() takes an array of three elements [N,D,M,S] and generates one random
 value based on the dice.
 
 Use the helper like this:
@@ -44,7 +44,7 @@ Use the helper like this:
 <polymer-element name="dnd-dice-helper">
   <script>
     (function() {
-      const PATTERN = /(\d*)d?(\d*)([\+\-]\d+)?/i;
+      const PATTERN = /^(\d*)d?(\d*)([\+\-]\d+)?([ul]\d*)?$/i;
 
       Polymer({
         parseSpec: function(spec) {
@@ -57,9 +57,26 @@ Use the helper like this:
           result[1] = result[1] ? parseInt(result[1]) : 8;
           result[2] = result[2] ? parseInt(result[2]) : 0;
 
+          var r3 = 0;
+          var prefix = result[3] ? result[3].charAt(0) : undefined;
+          if (prefix) {
+            if (result[3].length == 1) {
+              r3 = result[0] - 1;
+            } else if (prefix) {
+              r3 = parseInt(result[3].substring(1));
+            }
+
+            if (r3 < 0 || r3 >= result[0]) {
+              return undefined;
+            } else if (prefix == 'l') {
+              r3 = -r3;
+            }
+          }
+          result[3] = r3;
+
           if (result[0] < 0 || result[0] > 99 ||
               result[1] > 100 ||
-              result[0] < -99 || result[0] > 99) {
+              result[2] < -99 || result[2] > 99) {
             return undefined;
           }
 
@@ -68,12 +85,21 @@ Use the helper like this:
 
         unparseSpec: function (parsed) {
           var spec = parsed[0] + 'd' + parsed[1];
+
           var mod = parsed[2];
           if (mod > 0) {
             spec += '+' + mod;
           } else if (mod < 0) {
-            spec += + mod;
+            spec += mod;
           }
+
+          var subset = parsed[3];
+          if (subset > 0) {
+            spec += 'u' + subset;
+          } else if (subset < 0) {
+            spec += 'l' + -subset;
+          }
+
           return spec;
         },
 
@@ -81,14 +107,29 @@ Use the helper like this:
           if (!parsed)
             return '\u2639';
 
-          // Each time through the loop will add a number from 0..n-1.
-          // Since we want 1..n, we start total with the count.
           var count = parsed[0];
           var die = parsed[1];
           var total = count;
-          for (var i = 0; i < count; ++i) {
-            total += Math.floor(Math.random() * die);
+
+          if (parsed[3] == 0) {
+            // Each time through the loop will add a number from 0..n-1.
+            // Since we want 1..n, we start total with the count.
+            for (var i = 0; i < count; ++i)
+              total += Math.floor(Math.random() * die);
+          } else {
+            var positive = parsed[3] > 0;
+            var rolls = [];
+            for (var i = 0; i < count; ++i)
+              rolls[i] = Math.floor(Math.random() * die);
+            rolls.sort(function(l, r) {
+              return positive ? (r - l) : (l - r);
+            });
+            var subset = positive ? parsed[3] : -parsed[3];
+            total = subset;
+            for (var i = 0; i < subset; ++i)
+              total += rolls[i];
           }
+
           total += parsed[2];
           return total;
         }
