@@ -20,11 +20,13 @@ limitations under the License.
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="//fonts.googleapis.com/css?family=RobotoDraft:300,400,500|Source+Code+Pro:400,500,700" rel="stylesheet">
-<script src="../webcomponentsjs/webcomponents.js"></script>
-<link rel="import" href="dnd-dice-panel.html">
-<link rel="import" href="dnd-dice-preset.html">
-<link rel="import" href="dnd-dice-result.html">
-<link rel="import" href="dnd-dice-standard.html">
+
+<script src="../webcomponentsjs/webcomponents-lite.js"></script>
+<link rel="import" href="../dnd-dice/dnd-dice-panel.html">
+<link rel="import" href="../dnd-dice/dnd-dice-preset.html">
+<link rel="import" href="../dnd-dice/dnd-dice-result.html">
+<link rel="import" href="../dnd-dice/dnd-dice-standard.html">
+
 <style>
 body {
   font-family: "RobotoDraft",Helvetica,Arial,sans-serif;
@@ -62,12 +64,10 @@ code {
   width: 150px;
   height: 120px;
 }
-#result2::shadow #button {
+#result2 #button {
   background: #33d;
   color: white;
-}
-#result2::shadow #button::shadow #content {
-  font-size: 400%;  /* optional, default is 600% if not set */
+  font-size: 400%;
 }
 #pressed, #preset-pressed {
   background: #ffa;
@@ -117,7 +117,7 @@ For detailed information see the
   </div>
 </div>
 <div id="div-result-2">
-  <dnd-dice-result id="result2" spec="2d6" hideInput></dnd-dice-result>
+  <dnd-dice-result id="result2" spec="2d6" hide-input></dnd-dice-result>
   <div class="controls">
     This button rolls 2d6
   </div>
@@ -133,7 +133,7 @@ For detailed information see the
 
 <!-- Example of <dnd-dice-preset> -->
 <h2 id="demo-preset">Preset D&amp;D Dice</h2>
-<dnd-dice-preset rows="3" resultselector="#result1"></dnd-dice-preset>
+<dnd-dice-preset rows="3"></dnd-dice-preset>
 <div class="controls">(This preset is associated with the first dice result)</div>
 <div>Pressed: <span id="preset-pressed"></span></div>
 
@@ -180,15 +180,14 @@ dice.addEventListener('dec', function(e) {
 
 // Functions related to <dnd-dice-preset>
 var preset = document.querySelector('dnd-dice-preset');
-var preset_pressed = document.querySelector('#preset-pressed');
+var presetPressed = document.querySelector('#preset-pressed');
 preset.addEventListener('spec', function(e) {
-  preset_pressed.innerText = e.detail;
+  presetPressed.innerText = e.detail;
 });
 preset.addEventListener('setspec', function(e) {
   var result = document.querySelector('#result1');
   preset.setSpec(e.detail, result.spec);
 });
-
 </script>
 </body>
 </html>

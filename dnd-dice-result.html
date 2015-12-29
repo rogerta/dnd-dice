@@ -25,9 +25,9 @@ The element consists of two UI elements arranged vertically:
 2/ A <paper-button> to show the last random value rolled.
    The button can be pressed to re-roll the dice.
 
-The input element can be hidden with the |hideInput| attribute.
+The input element can be hidden with the |hideInput| property.
 
-The |spec| attribute sets the initial dice specification and can also be
+The |spec| property sets the initial dice specification and can also be
 changed programmatically.  If |spec| changes, the dice are re-rolled
 and the value displayed in the button.  To force a re-roll even if the
 specification does not change, use the |setSpec(spec)| method instead.
@@ -40,84 +40,74 @@ Examples:
 
     <dnd-dice-result></dnd-dice-result>
     <dnd-dice-result spec="3d6"></dnd-dice-result>
-    <dnd-dice-result hideInput></dnd-dice-result>
+    <dnd-dice-result hide-input></dnd-dice-result>
 
 <dnd-dice-result> elements can be resized using width and height styles.  If
 the size becomes too small, it may also be necessary to adjust the font size
-of the button.  The default font size is 600%.
+of the button.  The default font size is 500%.
 
-  #my-dnd-dice-result::shadow {
+  #my-dnd-dice-result {
     width: 400px;
     height: 300px;
-  }
-  #my-dnd-dice-result::shadow #button::shadow #content {
-    font-size: 400%;  /* optional, default is 600% if not set */
+    font-size: 400%;
   }
 
 The paper input and button elements can be styled using standard mechanisms.
 For example:
 
-  #my-dnd-dice-result::shadow #input {
+  #my-dnd-dice-result #input {
     /* styles for paper-input */
   }
-  #my-dnd-dice-result::shadow #button {
+  #my-dnd-dice-result #button {
     /* styles for paper-button */
   }
 
 @element dnd-dice-result
 -->
 
-<link rel="import" href="../polymer/polymer.html">
+<script src="../webcomponentsjs/webcomponents-lite.js"></script>
+<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-input/paper-input.html">
-<link rel="import" href="dnd-dice-helper.html">
+<link rel="import" href="../dnd-dice/dnd-dice-helper.html">
 
-<polymer-element name="dnd-dice-result">
+<dom-module id="dnd-dice-result">
   <template>
     <style>
     :host {
-      display: flex;
-      flex-direction: column;
-    }
-    paper-input {
-      width: 100%;
-    }
-    paper-input::shadow paper-input-decorator {
-      padding-top: 0.2em;
-      padding-bottom: 1em;
+      display: block;
+      @apply(--layout-vertical);
     }
     paper-button {
-      margin: 0px;
-    }
-    paper-button::shadow .button-content {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
       font-size: 500%;
-      padding: 0px;
+      margin: 0;
+      min-width: 10px;
+      padding-top: 0;
+      padding-bottom: 0;
     }
     </style>
-    <template if="{{!hideInput}}">
+    <template is="dom-if" if="{{!hideInput}}">
       <paper-input
+          no-label-float
           id="input" pattern="(\d*)d?(\d*)([\+\-]\d+)?"
           label="Enter dice to roll"
-          error="Use: XdN+M"
-          value="{{spec}}" on-change="{{roll}}">
+          value="{{spec}}" on-change="roll">
       </paper-input>
     </template>
-    <paper-button id="button" raised flex on-tap="{{roll}}">&nbsp;</paper-button>
+    <paper-button class="flex" id="button" raised on-tap="roll"></paper-button>
     <dnd-dice-helper id="helper"></dnd-dice-helper>
   </template>
   <script>
     Polymer({
-      publish: {
-        spec: '',
-        hideInput: false
+      is: 'dnd-dice-result',
+
+      properties: {
+        spec: {type: String, value: '', observer: 'specChanged_'},
+        hideInput: {type: Boolean, value: false}
       },
 
-      specChanged: function(oldValue, newValue) {
+      specChanged_: function(newValue, oldValue) {
         this.roll();
       },
 
@@ -126,7 +116,7 @@ For example:
           this.$.button.innerText =
               this.$.helper.roll(this.$.helper.parseSpec(this.spec)).toString();
         } else {
-          this.$.button.innerText = '';
+          this.$.button.innerText = '\u00a0';  // #nbsp;
         }
       },
 
@@ -147,14 +137,14 @@ For example:
       },
 
       inc: function() {
-        this._mod(1);
+        this.mod_(1);
       },
 
       dec: function() {
-        this._mod(-1);
+        this.mod_(-1);
       },
 
-      _mod: function(mod) {
+      mod_: function(mod) {
         var parsed = this.$.helper.parseSpec(this.spec);
         if (parsed) {
           parsed[2] += mod;
@@ -163,14 +153,12 @@ For example:
         }
       },
 
-      domReady: function() {
-        // This hack centers the text vertically.  In order for the span
-        // selector to work, the text content of the button must not be
-        // initially empty.  This is why its initialized to &nbsp;.  Also,
-        // it's important for the padding of |.button-content| to be zero.
-        var c = this.$.button.shadowRoot.querySelector('.button-content');
-        c.style.lineHeight = c.clientHeight + 'px';
+      attached: function() {
+        // This hack centers the text vertically.  It's important for the
+        // top/bottom margin/padding of |#button| to be zero.
+        var style = getComputedStyle(this.$.button);
+        this.$.button.style.lineHeight = style.height;
       }
     });
   </script>
-</polymer-element>
+</dom-module>

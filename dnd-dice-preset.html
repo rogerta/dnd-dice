@@ -43,20 +43,19 @@ For example:
   #my-dnd-dice-preset::shadow paper-button {
     /* styles for paper-button */
   }
-  
+
 @element dnd-dice-preset
 -->
 
-<link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../core-localstorage/core-localstorage.html">
+<script src="../webcomponentsjs/webcomponents-lite.js"></script>
+<link rel="import" href="../iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../paper-button/paper-button.html">
 
-<polymer-element name="dnd-dice-preset">
+<dom-module id="dnd-dice-preset">
   <template>
     <style>
     :host {
-      display: flex;
-      flex-direction: column;
+      display: block;
     }
     [row]+[row] {
       margin-top: 0.5em;
@@ -67,106 +66,116 @@ For example:
       min-width: 1em;
       margin: 0px;
     }
-    core-localstorage+paper-button {
+    iron-localstorage+paper-button {
       margin-left: 0.5em;
     }
     </style>
-    <template repeat="{{_, r in _rows}}">
-      <div horizontal layout row>
-      <template repeat="{{_, c in _cols}}">
-        <paper-button id="{{name}}-{{r}}-{{c}}" raised
-            on-tap="{{fireSpec}}" on-mousedown="{{onMouseDown}}"
-            on-mouseup="{{onMouseUp}}">{{_._values[r*cols+c]}}</paper-button>
-        <core-localstorage name="{{name}}_{{r}}_{{c}}"
-            value="{{_._values[r*cols+c]}}"></core-localstorage>
+    <div>
+      <template id="values" is="dom-repeat" items="{{values}}" index-as="r">
+        <div horizontal layout row>
+          <template is="dom-repeat" items="[[item]]" index-as="c">
+            <!-- See setSpec() below for details of id -->
+            <paper-button id="values.[[r]].[[c]]" raised
+                on-tap="fireSpec" on-mousedown="onMouseDown"
+                on-mouseup="onMouseUp">[[item.value]]</paper-button>
+          </template>
+        </div>
       </template>
-      </div>
-    </template>
+      <iron-localstorage name="[[name]]-dice-presets" value="{{values}}"
+          on-iron-localstorage-load="onPresetsLoaded_"
+          on-iron-localstorage-load-empty="onPresetsEmpty_"></iron-localstorage>
+    </div>
   </template>
   <script>
     (function() {
       var _pendingAsync = undefined;
 
       Polymer({
-        publish: {
-          rows: 4,
-          cols: 4,
-          name: 'dice-preset'
+        is: 'dnd-dice-preset',
+
+        properties: {
+          rows: {type: Number, value: 4},
+          cols: {type: Number, value: 4},
+          name: {type: String, value: 'dice-preset'},
+          values: {type: Array, value: undefined}  // Should be private
         },
 
-        // These arrays have length equal to their corresponding published
-        // property.  Each element is an integer starting at zero and
-        // incrementing.  This is to support templating, is there a better way?
-        _rows: undefined,
-        _cols: undefined,
-        
-        // This property is used as a model for the localstorage/button text
-        // binding.
-        _values: undefined,
-
-        rowsChanged: function(oldValue, newValue) {
-          this._recalcMatrix();
+        fireSpec: function(e, detail) {
+          this.fire('spec', e.currentTarget.innerText);
         },
 
-        colsChanged: function(oldValue, newValue) {
-          this._recalcMatrix();
+        onPresetsLoaded_: function() {
+          if (!this.values instanceof Array) {
+            this.onPresetsEmpty_();
+            return;
+          }
+
+          this.rows = this.values ? this.values.length : 0;
+          this.cols = this.rows > 0 ? this.values[0].length : 0;
         },
 
-        fireSpec: function(e, detail, sender) {
-          this.fire('spec', sender.innerText);
+        onPresetsEmpty_: function() {
+          if (!this.values)
+            this.recalcMatrix_();
         },
 
-        _recalcMatrix: function() {
-          this.job('recalc', function() {
-            var newRows = [];
-            for (var i = 0; i < this.rows; ++i)
-              newRows[i] = this;
-            var newCols = [];
-            for (var i = 0; i < this.cols; ++i)
-              newCols[i] = this;
-              
-            // Its necessary to set the initial values so that when there is
-            // no local storage data, the buttons still render.
+        recalcMatrix_: function() {
+          this.debounce('recalc', function() {
             var values = [];
-            var max = this.rows * this.cols;
-            var length = this._values.length;
-            for (var i = 0; i < max; ++i)
-              values[i] = i < length ? this._values[i] : '\u00a0';
-  
-            this._values = values;
-            this._rows = newRows;
-            this._cols = newCols;
+            for (var r = 0; r < this.rows; ++r) {
+              var row = [];
+              for (var c = 0; c < this.cols; ++c)
+                row.push({value: '\u00a0'});
+              values[r] = row;
+            }
+
+            // Copy old values.
+            /*if (this.values) {
+              var max = this.rows * this.cols;
+              var length = this._values.length;
+              for (var i = 0; i < max; ++i)
+                values[i] = i < length ? this._values[i] : '\u00a0';
+            }*/
+            this.set('values', values);
           });
         },
-  
-        onMouseDown: function(e, detail, sender) {
+
+        onMouseDown: function(e, detail) {
+          var sender = e.currentTarget;
           _pendingAsync = sender;
           this.async(function() {
             if (sender != _pendingAsync)
               return;
-          this.fire('setspec', sender);
-          }, undefined, 1000);
+            this.fire('setspec', sender);
+          }, 1000);
         },
 
-        onMouseUp: function(e, detail, sender) {
+        onMouseUp: function(e, detail) {
           _pendingAsync = undefined;
         },
 
         setSpec: function(sender, spec) {
-          // There is an empty text element between the paper-button and
-          // core-localstorage elements due to the carriage return between
-          // them, hence the second next sibling.
-          sender.nextSibling.nextSibling.value = spec;
-        },
+          spec = spec.trim();
+          if (spec.length ==0)
+            return;
 
-        created: function() {
-          this._values = [];
-        },
-
-        ready: function() {
-          this._recalcMatrix();
+          // NOTE: the id of |sender| must be a format that is understood by
+          // the set() method.  To set the value of an element in an array use
+          // the syntax '<array>.<index>' where <array> is the path to the
+          // array property and <index> is a decimal number of the index to set.
+          //
+          // In this case, |values| is a matrix, i.e. an array of arrays.  So
+          // the path to the matrix is 'values'.  The path to row |r| becomes
+          // 'values.r'.  Finally, the path to element |c| of row |r| becomes
+          // 'values.r.c'.  To keep things simple, the id of the sender is
+          // formatted in the template above to repect this pattern.
+          //
+          // Due to a problem with the way property notifications of primitive
+          // elements of arrays are handled, the strings are wrapped in
+          // objeects: https://github.com/Polymer/polymer/issues/2667
+          this.set(sender.id, {value: spec});
         }
       });
     })();
   </script>
-</polymer-element>
+</dom-module>

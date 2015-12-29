@@ -39,14 +39,16 @@ Use the helper like this:
 @element dnd-dice-helper
 -->
 
-<link rel="import" href="../polymer/polymer.html">
+<script src="../webcomponentsjs/webcomponents-lite.js"></script>
 
-<polymer-element name="dnd-dice-helper">
+<dom-module id="dnd-dice-helper">
   <script>
     (function() {
       const PATTERN = /^(\d*)d?(\d*)([\+\-]\d+)?([ul]\d*)?$/i;
 
       Polymer({
+        is: 'dnd-dice-helper',
+
         parseSpec: function(spec) {
           var result = PATTERN.exec(spec);
           if (!result || !result[0])
@@ -136,4 +138,4 @@ Use the helper like this:
       });
     })();
   </script>
-</polymer-element>
+</dom-module>

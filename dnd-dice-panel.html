@@ -18,11 +18,11 @@ limitations under the License.
 <dnd-dice-panel> puts all the other components together into a full UI for
 rolling dice and saving presets.  See the documentation for the other
 components for further details.
-  
+
 @element dnd-dice-panel
 -->
 
-<link rel="import" href="../polymer/polymer.html">
+<script src="/components/webcomponentsjs/webcomponents.js"></script>
 <link rel="import" href="dnd-dice-preset.html">
 <link rel="import" href="dnd-dice-result.html">
 <link rel="import" href="dnd-dice-standard.html">
@@ -44,17 +44,19 @@ components for further details.
     }
     </style>
     <div horizontal layout>
-      <dnd-dice-standard id="standard" on-die="{{onDieChanged}}"
-          on-inc="{{onInc}}" on-dec="{{onDec}}"></dnd-dice-standard>
+      <dnd-dice-standard id="standard" on-die="onDieChanged"
+          on-inc="onInc" on-dec="onDec"></dnd-dice-standard>
       <dnd-dice-result flex id="result"></dnd-dice-result>
     </div>
     <dnd-dice-preset id="preset" resultselector="#result"
-        on-spec="{{onDieChanged}}" on-setspec="{{onSetSpec}}"></dnd-dice-preset>
+        on-spec="onDieChanged" on-setspec="onSetSpec"></dnd-dice-preset>
   </template>
   <script>
     (function() {
       var presetChanged = false;
       Polymer({
+        is: 'dnd-dice-panel',
+
         onDieChanged: function(e) {
           if (!presetChanged)
             this.$.result.setSpec(e.detail);
