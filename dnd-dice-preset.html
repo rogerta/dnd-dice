@@ -23,7 +23,7 @@ Clicking a button fires a 'spec' event.  The event |detail| contains the dice
 specification attached to the button.  Long clicking a button (clicking the
 button and holding it down for 1 second) fires a 'setspec' event.  This can
 be used to attach a dice specification to the button with the |setSpec()|
-method.  The |detail| of the 'setspec' even can be passed as the |sender|
+method.  The |detail| of the 'setspec' even must be passed as the |sender|
 parameter of |setSpec()|.
 
 <dnd-dice-preset> persists attached dice specifications to local storage.  When
@@ -48,6 +48,7 @@ For example:
 -->
 
 <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
 <link rel="import" href="../iron-localstorage/iron-localstorage.html">
 <link rel="import" href="../paper-button/paper-button.html">
 
@@ -55,26 +56,26 @@ For example:
   <template>
     <style>
     :host {
-      display: block;
+      display: inline-block;
     }
     [row]+[row] {
       margin-top: 0.5em;
     }
     paper-button {
       text-transform: none;
-      width: 5em;
-      min-width: 1em;
       margin: 0px;
+      min-width: 1em;
+      width: 5em;
     }
-    iron-localstorage+paper-button {
+    paper-button+paper-button {
       margin-left: 0.5em;
     }
     </style>
     <div>
       <template id="values" is="dom-repeat" items="{{values}}" index-as="r">
-        <div horizontal layout row>
+        <div class="horizontal layout" row>
+          <!-- See setSpec() below for details of id -->
           <template is="dom-repeat" items="[[item]]" index-as="c">
-            <!-- See setSpec() below for details of id -->
             <paper-button id="values.[[r]].[[c]]" raised
                 on-tap="fireSpec" on-mousedown="onMouseDown"
                 on-mouseup="onMouseUp">[[item.value]]</paper-button>

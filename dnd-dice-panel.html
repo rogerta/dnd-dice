@@ -22,17 +22,17 @@ components for further details.
 @element dnd-dice-panel
 -->
 
-<script src="/components/webcomponentsjs/webcomponents.js"></script>
-<link rel="import" href="dnd-dice-preset.html">
-<link rel="import" href="dnd-dice-result.html">
-<link rel="import" href="dnd-dice-standard.html">
+<script src="../webcomponentsjs/webcomponents.js"></script>
+<link rel="import" href="../dnd-dice/dnd-dice-preset.html">
+<link rel="import" href="../dnd-dice/dnd-dice-result.html">
+<link rel="import" href="../dnd-dice/dnd-dice-standard.html">
+<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
 
-<polymer-element name="dnd-dice-panel">
+<dom-module id="dnd-dice-panel">
   <template>
     <style>
     :host {
-      display: flex;
-      flex-direction: column;
+      display: block;
       padding: 0.5em;
       width: calc(4 * 5em + 3 * 0.5em);
     }
@@ -43,12 +43,12 @@ components for further details.
       margin-top: calc(2 * 0.5em);
     }
     </style>
-    <div horizontal layout>
+    <div class="horizontal layout">
       <dnd-dice-standard id="standard" on-die="onDieChanged"
           on-inc="onInc" on-dec="onDec"></dnd-dice-standard>
-      <dnd-dice-result flex id="result"></dnd-dice-result>
+      <dnd-dice-result class="flex" id="result"></dnd-dice-result>
     </div>
-    <dnd-dice-preset id="preset" resultselector="#result"
+    <dnd-dice-preset id="preset"
         on-spec="onDieChanged" on-setspec="onSetSpec"></dnd-dice-preset>
   </template>
   <script>
@@ -77,4 +77,4 @@ components for further details.
       });
     })();
   </script>
-</polymer-element>
+</dom-module>

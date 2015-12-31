@@ -31,12 +31,16 @@ For example:
 -->
 
 <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-button/paper-button.html">
 
 <dom-module id="dnd-dice-standard">
   <template>
     <style>
+    :host {
+      display: inline-block;
+    }
     [row]+[row] {
       margin-top: 0.5em;
     }
