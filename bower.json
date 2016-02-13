@@ -9,10 +9,6 @@
     "iron-flex-layout": "PolymerElements/iron-flex-layout#~1.2.2"
   },
   "resolutions": {
-    "polymer": "^1.2.0",
-    "font-roboto": "^1.0.1",
-    "paper-button": "~1.0.11",
-    "paper-ripple": "^1.0.0",
-    "paper-input": "~1.1.3"
+    "polymer": "^1.2.0"
   }
 }
