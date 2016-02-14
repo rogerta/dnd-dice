@@ -105,13 +105,13 @@ would be like rolling an ability check with disadvantage.
 **S** can be left out if it's value is equal to **N-1**.  The following three
 dice specifications are equivalent to the previous three, respectively:
 
-**4d6u**  
-**2d20u**  
-**2d20l**  
+**4d6u**
+**2d20u**
+**2d20l**
 
 # Demos
 
-See [demos of all the components](http://dnd-tools.appspot.com/components/dnd-dice/demo.html).
+See [demos of all the components](http://dnd-tools.appspot.com/bower_components/dnd-dice/demo.html).
 A much [fancier demo](http://dnd-tools.appspot.com/dice) also exists.
 
 [Unit tests](http://dnd-tools.appspot.com/tests) for parsing and unparsing

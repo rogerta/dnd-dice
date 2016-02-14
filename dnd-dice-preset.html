@@ -89,7 +89,7 @@ For example:
   </template>
   <script>
     (function() {
-      var _pendingAsync = undefined;
+      var pendingAsync_ = undefined;
 
       Polymer({
         is: 'dnd-dice-preset',
@@ -129,30 +129,22 @@ For example:
                 row.push({value: '\u00a0'});
               values[r] = row;
             }
-
-            // Copy old values.
-            /*if (this.values) {
-              var max = this.rows * this.cols;
-              var length = this._values.length;
-              for (var i = 0; i < max; ++i)
-                values[i] = i < length ? this._values[i] : '\u00a0';
-            }*/
             this.set('values', values);
           });
         },
 
         onMouseDown: function(e, detail) {
           var sender = e.currentTarget;
-          _pendingAsync = sender;
+          pendingAsync_ = sender;
           this.async(function() {
-            if (sender != _pendingAsync)
+            if (sender != pendingAsync_)
               return;
             this.fire('setspec', sender);
           }, 1000);
         },
 
         onMouseUp: function(e, detail) {
-          _pendingAsync = undefined;
+          pendingAsync_ = undefined;
         },
 
         setSpec: function(sender, spec) {

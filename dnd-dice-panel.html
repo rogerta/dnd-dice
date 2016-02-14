@@ -54,14 +54,14 @@ components for further details.
   </template>
   <script>
     (function() {
-      var presetChanged = false;
+      var presetChanged_ = false;
       Polymer({
         is: 'dnd-dice-panel',
 
         onDieChanged: function(e) {
-          if (!presetChanged)
+          if (!presetChanged_)
             this.$.result.setSpec(e.detail);
-          presetChanged = false;
+          presetChanged_ = false;
         },
         onInc: function(e) {
           this.$.result.inc();
@@ -70,7 +70,7 @@ components for further details.
           this.$.result.dec();
         },
         onSetSpec: function(e) {
-          presetChanged = true;
+          presetChanged_ = true;
           var spec = this.$.result.getValidSpec();
           if (spec)
             this.$.preset.setSpec(e.detail, spec);
