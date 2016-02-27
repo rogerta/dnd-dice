@@ -77,8 +77,8 @@ For example:
           <!-- See setSpec() below for details of id -->
           <template is="dom-repeat" items="[[item]]" index-as="c">
             <paper-button id="values.[[r]].[[c]]" raised
-                on-tap="fireSpec" on-mousedown="onMouseDown"
-                on-mouseup="onMouseUp">[[item.value]]</paper-button>
+                on-tap="fireSpec_" on-down="onMouseDown_"
+                on-up="onMouseUp_">[[item.value]]</paper-button>
           </template>
         </div>
       </template>
@@ -101,7 +101,7 @@ For example:
           values: {type: Array, value: undefined}  // Should be private
         },
 
-        fireSpec: function(e, detail) {
+        fireSpec_: function(e, detail) {
           this.fire('spec', e.currentTarget.innerText);
         },
 
@@ -133,7 +133,7 @@ For example:
           });
         },
 
-        onMouseDown: function(e, detail) {
+        onMouseDown_: function(e, detail) {
           var sender = e.currentTarget;
           pendingAsync_ = sender;
           this.async(function() {
@@ -143,7 +143,7 @@ For example:
           }, 1000);
         },
 
-        onMouseUp: function(e, detail) {
+        onMouseUp_: function(e, detail) {
           pendingAsync_ = undefined;
         },
 
