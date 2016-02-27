@@ -45,12 +45,12 @@ components for further details.
     }
     </style>
     <div class="horizontal layout">
-      <dnd-dice-standard id="standard" on-die="onDieChanged"
-          on-inc="onInc" on-dec="onDec"></dnd-dice-standard>
+      <dnd-dice-standard id="standard" on-die="onDieChanged_"
+          on-inc="onInc_" on-dec="onDec_"></dnd-dice-standard>
       <dnd-dice-result class="flex" id="result"></dnd-dice-result>
     </div>
     <dnd-dice-preset id="preset"
-        on-spec="onDieChanged" on-setspec="onSetSpec"></dnd-dice-preset>
+        on-spec="onDieChanged_" on-setspec="onSetSpec_"></dnd-dice-preset>
   </template>
   <script>
     (function() {
@@ -58,18 +58,18 @@ components for further details.
       Polymer({
         is: 'dnd-dice-panel',
 
-        onDieChanged: function(e) {
+        onDieChanged_: function(e) {
           if (!presetChanged_)
             this.$.result.setSpec(e.detail);
           presetChanged_ = false;
         },
-        onInc: function(e) {
+        onInc_: function(e) {
           this.$.result.inc();
         },
-        onDec: function(e) {
+        onDec_: function(e) {
           this.$.result.dec();
         },
-        onSetSpec: function(e) {
+        onSetSpec_: function(e) {
           presetChanged_ = true;
           var spec = this.$.result.getValidSpec();
           if (spec)

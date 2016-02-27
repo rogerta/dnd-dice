@@ -66,22 +66,22 @@ For example:
     }
     </style>
     <div class="horizontal layout" row>
-      <paper-button raised die on-tap="fireDie">d4</paper-button>
-      <paper-button raised die on-tap="fireDie">d6</paper-button>
+      <paper-button raised die on-tap="fireDie_">d4</paper-button>
+      <paper-button raised die on-tap="fireDie_">d6</paper-button>
     </div>
     <div class="horizontal layout" row>
-      <paper-button raised die on-tap="fireDie">d8</paper-button>
-      <paper-button raised die on-tap="fireDie">d10</paper-button>
+      <paper-button raised die on-tap="fireDie_">d8</paper-button>
+      <paper-button raised die on-tap="fireDie_">d10</paper-button>
     </div>
     <div class="horizontal layout" row>
-      <paper-button raised die on-tap="fireDie">d12</paper-button>
-      <paper-button raised die on-tap="fireDie">d20</paper-button>
+      <paper-button raised die on-tap="fireDie_">d12</paper-button>
+      <paper-button raised die on-tap="fireDie_">d20</paper-button>
     </div>
     <div class="horizontal layout" row>
-      <paper-button raised die on-tap="fireDie">d100</paper-button>
+      <paper-button raised die on-tap="fireDie_">d100</paper-button>
       <div die class="horizontal layout">
-        <paper-button raised mod plus on-tap="fireMod">+</paper-button>
-        <paper-button raised mod minus on-tap="fireMod">-</paper-button>
+        <paper-button raised mod plus on-tap="fireMod_">+</paper-button>
+        <paper-button raised mod minus on-tap="fireMod_">-</paper-button>
       </div>
     </div>
   </template>
@@ -94,7 +94,7 @@ For example:
       Polymer({
         is: 'dnd-dice-standard',
 
-        fireDie: function(e, detail) {
+        fireDie_: function(e, detail) {
           var sender = e.currentTarget;
           if ((e.timeStamp - lastClickTime_ < 400) &&
               (lastDie_ == sender.innerText)) {
@@ -106,7 +106,7 @@ For example:
           this.fire('die', lastCount_ + sender.innerText);
           lastClickTime_ = e.timeStamp;
         },
-        fireMod: function(e, detail) {
+        fireMod_: function(e, detail) {
           this.fire(e.currentTarget.innerText == '+' ? 'inc' : 'dec');
         }
       });
