@@ -12,35 +12,26 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-@group D&D Dice
-
-<dnd-dice-helper> contains helper functions to parse and unparse dice
-specifications as well as generating random rolls of dice.
-
-parseSpec() takes a string of the form "NdD+MuS" and converts it to an array
-with three elements: [N,D,M,S].
-
-unparseSpec() takes an array of elements [N,D,M,S] and converts it to a
-string of the form "NdD+MuS".
-
-roll() takes an array of three elements [N,D,M,S] and generates one random
-value based on the dice.
-
-Use the helper like this:
-
-  in html:
-  <dnd-dice-helper id="helper"></dnd-dice-helper>
-
-  // in javascript code:
-  var dice = this.$.helper.parseSpec("3d6");
-  var value = this.$.helper.roll(dice);  // a value between 3 and 18
-
-@element dnd-dice-helper
 -->
 
 <script src="../polymer/polymer.html"></script>
 
+<!--
+`<dnd-dice-helper>` contains helper functions to parse and unparse dice
+specifications as well as generating random rolls of dice.  Dice specification
+strings are quite flexible and compact, see the
+[full specification](https://github.com/rogerta/dnd-dice#simple-dice-specification)
+for details.  Use the helper like this:
+
+In html:
+
+    <dnd-dice-helper id="helper"></dnd-dice-helper>
+
+In javascript code:
+
+    var dice = this.$.helper.parseSpec("3d6");
+    var value = this.$.helper.roll(dice);  // a value between 3 and 18
+-->
 <dom-module id="dnd-dice-helper">
   <script>
     (function() {
@@ -49,6 +40,17 @@ Use the helper like this:
       Polymer({
         is: 'dnd-dice-helper',
 
+        /**
+         * Parses a dice specification string into its corresponding numbers.
+         * The dice specification string can be either simple or advanced.
+         *
+         * An array of four integers is always returned.  If optional parts
+         * of the specification string are missing the corresponding numbers
+         * take on their default values.
+         *
+         * @param {string} Dice specification of the form NdD+MuS.
+         * @return {Array<number>} with four integers: [N,D,M,S].
+         */
         parseSpec: function(spec) {
           var result = PATTERN.exec(spec);
           if (!result || !result[0])
@@ -85,6 +87,15 @@ Use the helper like this:
           return result;
         },
 
+        /**
+         * Converts an array of integers `[N,D,M,S]` into a dice specification
+         * string.  The order if numbers in the array is important.  If `M` is
+         * zero, the modifier is ommitted from the string.  If `S` is zero,
+         * upper/lower is ommitted from the string.
+         *
+         * @param {Array<number>} Array with four integers: [N,D,M,S].
+         * @return {string} specification of the form "NdD+MuS".
+         */
         unparseSpec: function (parsed) {
           var spec = parsed[0] + 'd' + parsed[1];
 
@@ -105,6 +116,18 @@ Use the helper like this:
           return spec;
         },
 
+        /**
+         * Generates a random integer based on array of four integers
+         * `[N,D,M,S]`.
+         *
+         * All four integers must be specified and their order in the array
+         * is important.  See full dice specification for the meaning of the
+         * numbers.  The array passed to this function is usually returned
+         * from `parseSpec()`.
+         *
+         * @param {Array<number>} Array with four integers: [N,D,M,S].
+         * @return {number} value: a random integer based on dice.
+         */
         roll: function(parsed) {
           if (!parsed)
             return '\u2639';
