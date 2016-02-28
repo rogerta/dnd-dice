@@ -8,31 +8,27 @@ components to build just the UI you need.
 
 Five components are included:
 
-### D&D Dice Result (`<dnd-dice-result>`)
-
+### D&D Dice Result `<dnd-dice-result>`
 A component that shows a random result of rolling dice. This is essentially a
 large button that shows the result along with a text input field to specify
 what dice to roll. Click the button to roll again.
 
-### Standard D&D Dice Grid (`<dnd-dice-standard>`)
-
+### Standard D&D Dice Grid `<dnd-dice-standard>`
 A component that shows a grid of buttons for rolling standard D&D dice like d6
 or d20. Clicking a button fires an event. Quickly multi-clicking a button fires
 an event that specifies the corresponding multiple number of dice to roll.
 
-### Preset D&D Dice Grid (`<dnd-dice-preset>`)
-
+### Preset D&D Dice Grid `<dnd-dice-preset>`
 A component that shows a grid of buttons for rolling custom D&D dice, like
 2d4-1 or 3d6. Clicking or long-clicking a button fires an event. Clicking is
 often used to roll the dice, while long-clicking is used to preset the button to
 a given custom dice specification.
 
-### D&D Dice Helper (`<dnd-dice-helper>`)
+### D&D Dice Helper `<dnd-dice-helper>`
 A component that contains helper functions to parse and unparse dice
 specifications as well as generating random rolls of dice.
 
-### Complete D&D Dice Panel (`<dnd-dice-panel>`)
-
+### Complete D&D Dice Panel `<dnd-dice-panel>`
 A component that puts together all the above into a full featured UI for
 rolling dice.
 
@@ -111,7 +107,7 @@ dice specifications are equivalent to the previous three, respectively:
 
 # Demos
 
-See [demos of all the components](http://dnd-tools.appspot.com/bower_components/dnd-dice/demo.html).
+See [demos of all the components](http://rogerta.github.io/dnd-dice/components/dnd-dice/demo/).
 A much [fancier demo](http://dnd-tools.appspot.com/dice) also exists.
 
 [Unit tests](http://dnd-tools.appspot.com/tests) for parsing and unparsing
