@@ -12,57 +12,6 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-@group D&D Dice
-
-<dnd-dice-result> shows the result of D&D dice rolls.  The user can type
-dice specifications such as 3d6 or 2d4-1 and the element will calculate
-a random value and display it.
-
-The element consists of two UI elements arranged vertically:
-
-1/ A <paper-input> element to type dice specification.
-2/ A <paper-button> to show the last random value rolled.
-   The button can be pressed to re-roll the dice.
-
-The input element can be hidden with the |hideInput| property.
-
-The |spec| property sets the initial dice specification and can also be
-changed programmatically.  If |spec| changes, the dice are re-rolled
-and the value displayed in the button.  To force a re-roll even if the
-specification does not change, use the |setSpec(spec)| method instead.
-
-<dnd-dice-result> elements provide a |roll()| method to programmatic
-re-roll the dice specification.  |inc()| and |dec()| methods can be called
-to increment or decrement the dice specification modifier.
-
-Examples:
-
-    <dnd-dice-result></dnd-dice-result>
-    <dnd-dice-result spec="3d6"></dnd-dice-result>
-    <dnd-dice-result hide-input></dnd-dice-result>
-
-<dnd-dice-result> elements can be resized using width and height styles.  If
-the size becomes too small, it may also be necessary to adjust the font size
-of the button.  The default font size is 500%.
-
-  #my-dnd-dice-result {
-    width: 400px;
-    height: 300px;
-    font-size: 400%;
-  }
-
-The paper input and button elements can be styled using standard mechanisms.
-For example:
-
-  #my-dnd-dice-result #input {
-    /* styles for paper-input */
-  }
-  #my-dnd-dice-result #button {
-    /* styles for paper-button */
-  }
-
-@element dnd-dice-result
 -->
 
 <script src="../polymer/polymer.html"></script>
@@ -72,6 +21,58 @@ For example:
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../dnd-dice/dnd-dice-helper.html">
 
+<!--
+`<dnd-dice-result>` shows the result of D&D dice rolls.  The user can type
+dice specifications such as `3d6` or `2d4-1` and the element will calculate
+a random value and display it.
+
+The element consists of two UI elements arranged vertically:
+
+1. A `<paper-input>` element to type dice specification.
+2. A `<paper-button>` to show the last random value rolled.
+  The button can be pressed to re-roll the dice.
+
+The input element can be hidden with the `hideInput` property.
+
+The `spec` property sets the initial dice specification and can also be
+changed programmatically.  If `spec` changes, the dice are re-rolled
+and the value displayed in the button.  To force a re-roll even if the
+specification does not change, use the `setSpec(spec)` method instead.
+
+`<dnd-dice-result>` provides a `roll()` method to programmatic
+re-roll the dice specification.  `inc()` and `dec()` methods increment or
+decrement the dice specification modifier.
+
+Examples:
+
+    <dnd-dice-result></dnd-dice-result>
+    <dnd-dice-result spec="3d6"></dnd-dice-result>
+    <dnd-dice-result hide-input></dnd-dice-result>
+
+### Styling
+
+`<dnd-dice-result>` elements can be resized using width and height styles.  If
+the size becomes too small, it may also be necessary to adjust the font size
+of the button.  The default font size is 500%.
+
+    #my-dnd-dice-result {
+      width: 400px;
+      height: 300px;
+      font-size: 400%;
+    }
+
+The paper input and button elements can be styled using standard mechanisms.
+For example:
+
+    #my-dnd-dice-result #input {
+      /* styles for paper-input */
+    }
+    #my-dnd-dice-result #button {
+      /* styles for paper-button */
+    }
+
+@demo
+-->
 <dom-module id="dnd-dice-result">
   <template>
     <style>
@@ -102,14 +103,17 @@ For example:
       is: 'dnd-dice-result',
 
       properties: {
-        spec: {type: String, value: '', observer: 'specChanged_'},
+        /** Current dice specification of the element. */
+        spec: {type: String, value: '', observer: '_specChanged'},
+        /** If true hides the `<paper-input>` element. */
         hideInput: {type: Boolean, value: false}
       },
 
-      specChanged_: function(newValue, oldValue) {
+      _specChanged: function(newValue, oldValue) {
         this.roll();
       },
 
+      /** Rolls the current dice specification and shows the result. */
       roll: function() {
         if (this.spec) {
           this.$.button.innerText =
@@ -119,6 +123,11 @@ For example:
         }
       },
 
+      /**
+       * Sets the current dice specification.
+       *
+       * @param {string} spec Dice specification of the form NdD+MuS.
+       */
       setSpec: function(spec) {
         // Only force a roll if the spec will not change, otherwise the
         // dice will be rolled twice.
@@ -130,20 +139,27 @@ For example:
         }
       },
 
+      /**
+       * Gets the current dice specification.
+       *
+       * @return {string} Dice specification of the form "NdD+MuS".
+       */
       getValidSpec: function() {
         var parsed = this.$.helper.parseSpec(this.spec);
         return parsed ? this.spec : undefined;
       },
 
+      /** Increments the dice modifier by one and rolls the new dice. */
       inc: function() {
-        this.mod_(1);
+        this._mod(1);
       },
 
+      /** Decrements the dice modifier by one and rolls the new dice. */
       dec: function() {
-        this.mod_(-1);
+        this._mod(-1);
       },
 
-      mod_: function(mod) {
+      _mod: function(mod) {
         var parsed = this.$.helper.parseSpec(this.spec);
         if (parsed) {
           parsed[2] += mod;

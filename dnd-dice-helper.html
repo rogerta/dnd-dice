@@ -50,7 +50,7 @@ In javascript code:
          * of the specification string are missing the corresponding numbers
          * take on their default values.
          *
-         * @param {string} Dice specification of the form NdD+MuS.
+         * @param {string} spec Dice specification of the form "NdD+MuS".
          * @return {Array<number>} with four integers: [N,D,M,S].
          */
         parseSpec: function(spec) {
@@ -95,7 +95,7 @@ In javascript code:
          * zero, the modifier is ommitted from the string.  If `S` is zero,
          * upper/lower is ommitted from the string.
          *
-         * @param {Array<number>} Array with four integers: [N,D,M,S].
+         * @param {Array<number>} parsed Array with four integers: [N,D,M,S].
          * @return {string} specification of the form "NdD+MuS".
          */
         unparseSpec: function (parsed) {
@@ -127,7 +127,7 @@ In javascript code:
          * numbers.  The array passed to this function is usually returned
          * from `parseSpec()`.
          *
-         * @param {Array<number>} Array with four integers: [N,D,M,S].
+         * @param {Array<number>} parsed Array with four integers: [N,D,M,S].
          * @return {number} value: a random integer based on dice.
          */
         roll: function(parsed) {

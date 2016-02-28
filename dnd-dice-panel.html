@@ -12,14 +12,6 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-@group D&D Dice
-
-<dnd-dice-panel> puts all the other components together into a full UI for
-rolling dice and saving presets.  See the documentation for the other
-components for further details.
-
-@element dnd-dice-panel
 -->
 
 <script src="../polymer/polymer.html"></script>
@@ -28,6 +20,15 @@ components for further details.
 <link rel="import" href="../dnd-dice/dnd-dice-standard.html">
 <link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
 
+<!--
+`<dnd-dice-panel>` puts all the other components together into a full UI for
+rolling dice and saving presets.  No properties or public methods are exposed.
+Use in a web page as follows:
+
+    <dnd-dice-panel></dnd-dice-panel>
+
+@demo
+-->
 <dom-module id="dnd-dice-panel">
   <template>
     <style>
@@ -45,12 +46,12 @@ components for further details.
     }
     </style>
     <div class="horizontal layout">
-      <dnd-dice-standard id="standard" on-die="onDieChanged_"
-          on-inc="onInc_" on-dec="onDec_"></dnd-dice-standard>
+      <dnd-dice-standard id="standard" on-die="_onDieChanged"
+          on-inc="_onInc" on-dec="_onDec"></dnd-dice-standard>
       <dnd-dice-result class="flex" id="result"></dnd-dice-result>
     </div>
     <dnd-dice-preset id="preset"
-        on-spec="onDieChanged_" on-setspec="onSetSpec_"></dnd-dice-preset>
+        on-spec="_onDieChanged" on-setspec="_onSetSpec"></dnd-dice-preset>
   </template>
   <script>
     (function() {
@@ -58,18 +59,18 @@ components for further details.
       Polymer({
         is: 'dnd-dice-panel',
 
-        onDieChanged_: function(e) {
+        _onDieChanged: function(e) {
           if (!presetChanged_)
             this.$.result.setSpec(e.detail);
           presetChanged_ = false;
         },
-        onInc_: function(e) {
+        _onInc: function(e) {
           this.$.result.inc();
         },
-        onDec_: function(e) {
+        _onDec: function(e) {
           this.$.result.dec();
         },
-        onSetSpec_: function(e) {
+        _onSetSpec: function(e) {
           presetChanged_ = true;
           var spec = this.$.result.getValidSpec();
           if (spec)
