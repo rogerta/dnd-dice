@@ -104,6 +104,7 @@ Examples:
 
         _onPresetsLoaded: function() {
           if (!this._values instanceof Array) {
+            this._values = undefined;
             this._onPresetsEmpty();
             return;
           }

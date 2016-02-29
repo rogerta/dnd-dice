@@ -42,6 +42,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         preset = fixture('dndDicePreset');
       });
 
+      teardown(function() {
+        // Clear local storage for next test run.
+        window.localStorage.clear();
+      });
+
       test('Has 4 rows and columns', function(done) {
         expect(preset.rows).to.equal(4);
         expect(preset.cols).to.equal(4);
@@ -116,6 +121,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         preset = fixture('dndDicePreset1x3');
       });
 
+      teardown(function() {
+        // Clear local storage for next test run.
+        window.localStorage.clear();
+      });
+
       test('Has right rows and columns', function(done) {
         expect(preset.rows).to.equal(1);
         expect(preset.cols).to.equal(3);
@@ -131,18 +141,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         expect(preset.rows).to.equal(1);
         expect(preset.cols).to.equal(3);
 
-        preset.rows = 2;
-        preset.cols = 2;
-        preset._recalcMatrix();
         Polymer.Base.async(function() {
-          expect(preset.rows).to.equal(2);
-          expect(preset.cols).to.equal(2);
+          preset.rows = 2;
+          preset.cols = 2;
+          preset._recalcMatrix();
+          Polymer.Base.async(function() {
+            expect(preset.rows).to.equal(2);
+            expect(preset.cols).to.equal(2);
 
-          expect(preset._values.length).to.equal(2);
-          expect(preset._values[0].length).to.equal(2);
-          expect(preset._values[1].length).to.equal(2);
+            expect(preset._values.length).to.equal(2);
+            expect(preset._values[0].length).to.equal(2);
+            expect(preset._values[1].length).to.equal(2);
 
-          done();
+            done();
+          }, 1);
         }, 1);
       });
     });
