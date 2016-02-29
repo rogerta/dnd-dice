@@ -96,7 +96,7 @@ For example:
       Polymer({
         is: 'dnd-dice-standard',
 
-        _fireDie: function(e, detail) {
+        _fireDie: function(e) {
           var sender = e.currentTarget;
           if ((e.timeStamp - lastClickTime_ < 400) &&
               (lastDie_ == sender.innerText)) {
@@ -108,7 +108,7 @@ For example:
           this.fire('die', lastCount_ + sender.innerText);
           lastClickTime_ = e.timeStamp;
         },
-        _fireMod: function(e, detail) {
+        _fireMod: function(e) {
           this.fire(e.currentTarget.innerText == '+' ? 'inc' : 'dec');
         }
       });
