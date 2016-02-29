@@ -130,7 +130,7 @@ Examples:
           });
         },
 
-        _onMouseDown: function(e, detail) {
+        _onMouseDown: function(e) {
           var sender = e.currentTarget;
           pendingAsync_ = sender;
           this.async(function() {
@@ -140,7 +140,7 @@ Examples:
           }, 1000);
         },
 
-        _onMouseUp: function(e, detail) {
+        _onMouseUp: function(e) {
           pendingAsync_ = undefined;
         },
 
@@ -154,7 +154,7 @@ Examples:
          */
         setSpec: function(sender, spec) {
           spec = spec.trim();
-          if (spec.length ==0)
+          if (spec.length == 0)
             return;
 
           // NOTE: the id of |sender| must be a format that is understood by
