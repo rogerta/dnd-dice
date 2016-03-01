@@ -32,6 +32,10 @@ specifications as well as generating random rolls of dice.
 A component that puts together all the above into a full featured UI for
 rolling dice.
 
+See the
+[API documentation](http://rogerta.github.io/dnd-dice/components/dnd-dice/)
+for a full description of each component.
+
 ## Simple Dice Specification
 
 A dice specification is a string of the form **NdD+M**, which is interpreted to
@@ -110,6 +114,5 @@ dice specifications are equivalent to the previous three, respectively:
 See [demos of all the components](http://rogerta.github.io/dnd-dice/components/dnd-dice/demo/).
 A much [fancier demo](http://dnd-tools.appspot.com/dice) also exists.
 
-[Unit tests](http://dnd-tools.appspot.com/tests) for parsing and unparsing
-dice are available.
+[Unit tests](http://rogerta.github.io/dnd-dice/components/dnd-dice/test/)
 
