@@ -89,25 +89,26 @@ For example:
   </template>
   <script>
     (function() {
-      var lastClickTime_ = undefined;
-      var lastDie_ = undefined;
-      var lastCount_ = 1;
+      var _lastClickTime = 0;
+      var _lastDie = undefined;
+      var _lastCount = 1;
 
       Polymer({
         is: 'dnd-dice-standard',
 
         _fireDie: function(e) {
           var sender = e.currentTarget;
-          if ((e.timeStamp - lastClickTime_ < 400) &&
-              (lastDie_ == sender.innerText)) {
-            ++lastCount_;
+          if ((e.timeStamp - _lastClickTime < 400) &&
+              (_lastDie == sender.innerText)) {
+            ++_lastCount;
           } else {
-            lastDie_ = sender.innerText;
-            lastCount_ = 1;
+            _lastDie = sender.innerText;
+            _lastCount = 1;
           }
-          this.fire('die', lastCount_ + sender.innerText);
-          lastClickTime_ = e.timeStamp;
+          this.fire('die', _lastCount + sender.innerText);
+          _lastClickTime = e.timeStamp;
         },
+
         _fireMod: function(e) {
           this.fire(e.currentTarget.innerText == '+' ? 'inc' : 'dec');
         }
