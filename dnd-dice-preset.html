@@ -68,7 +68,7 @@ Examples:
         <div class="horizontal layout" row>
           <!-- See setSpec() below for details of id -->
           <template is="dom-repeat" items="[[item]]" index-as="c">
-            <paper-button id="_values.[[r]].[[c]]" raised
+            <paper-button id="_values.[[r]].[[c]]" raised noink
                 on-tap="_fireSpec" on-down="_onMouseDown"
                 on-up="_onMouseUp">[[item.value]]</paper-button>
           </template>
