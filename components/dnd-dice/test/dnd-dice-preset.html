@@ -1,0 +1,167 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>dnd-dice-preset tests</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <link rel="import" href="../dnd-dice-preset.html">
+
+</head>
+<body>
+
+  <test-fixture id="dndDicePreset">
+    <template>
+      <dnd-dice-preset name="Preset"></dnd-dice-preset>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="dndDicePreset1x3">
+    <template>
+      <dnd-dice-preset name="Preset1x3" rows="1" cols="3"></dnd-dice-preset>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('Basic dnd-dice-preset tests', function() {
+      var preset;
+
+      setup(function() {
+        preset = fixture('dndDicePreset');
+        // Change the long press delay to something really short so that tests
+        // can be kept fast.
+        preset._delay = 5;
+      });
+
+      teardown(function() {
+        // Clear local storage for next test run.
+        window.localStorage.clear();
+      });
+
+      test('Has 4 rows and columns', function(done) {
+        expect(preset.rows).to.equal(4);
+        expect(preset.cols).to.equal(4);
+
+        Polymer.Base.async(function() {
+          expect(preset._values.length).to.equal(4);
+          expect(preset._values[0].length).to.equal(4);
+          expect(preset._values[1].length).to.equal(4);
+          expect(preset._values[2].length).to.equal(4);
+          expect(preset._values[3].length).to.equal(4);
+          done();
+        }, 1);
+      });
+
+      test('setSpec', function() {
+        var sender = {id: '_values.0.0'};
+        Polymer.Base.async(function() {
+          preset.setSpec(sender, '1d6');
+          expect(preset._values[0][0]).to.have.property('value')
+              .to.equal('1d6');
+
+          preset.setSpec(sender, ' 2d6  ');
+          expect(preset._values[0][0]).to.have.property('value')
+              .to.equal('2d6');
+
+          preset.setSpec(sender, '');
+          expect(preset._values[0][0]).to.have.property('value')
+              .to.equal('2d6');
+
+          preset.setSpec(sender, '  ');
+          expect(preset._values[0][0]).to.have.property('value')
+              .to.equal('2d6');
+        } ,1);
+      });
+
+      test('Click fires "spec" event', function(done) {
+        preset.addEventListener('spec', function(e) {
+          done();
+        });
+
+        Polymer.Base.async(function() {
+          preset.$$('paper-button').click();
+        }, 1);
+      });
+
+      test('Long click fires "setspec" event', function(done) {
+        preset.addEventListener('setspec', function(e) {
+          done();
+        });
+
+        preset._onMouseDown({currentTarget: 'foo'});
+      });
+
+      test('Short click does not fire "setspec" event', function(done) {
+        preset.addEventListener('setspec', function(e) {
+          done('Should not fire');
+        });
+
+        preset._onMouseDown({currentTarget: 'foo'});
+        preset._onMouseUp({currentTarget: 'foo'});
+
+        Polymer.Base.async(function() {
+          done();
+        }, preset._delay + 1);
+      });
+    });
+
+    suite('rows/cols property', function() {
+      var preset;
+
+      setup(function() {
+        preset = fixture('dndDicePreset1x3');
+      });
+
+      teardown(function() {
+        // Clear local storage for next test run.
+        window.localStorage.clear();
+      });
+
+      test('Has right rows and columns', function(done) {
+        expect(preset.rows).to.equal(1);
+        expect(preset.cols).to.equal(3);
+
+        Polymer.Base.async(function() {
+          expect(preset._values.length).to.equal(1);
+          expect(preset._values[0].length).to.equal(3);
+          done();
+        }, 1);
+      });
+
+      test('recalcMatrix', function(done) {
+        expect(preset.rows).to.equal(1);
+        expect(preset.cols).to.equal(3);
+
+        Polymer.Base.async(function() {
+          preset.rows = 2;
+          preset.cols = 2;
+          preset._recalcMatrix();
+          Polymer.Base.async(function() {
+            expect(preset.rows).to.equal(2);
+            expect(preset.cols).to.equal(2);
+
+            expect(preset._values.length).to.equal(2);
+            expect(preset._values[0].length).to.equal(2);
+            expect(preset._values[1].length).to.equal(2);
+
+            done();
+          }, 1);
+        }, 1);
+      });
+    });
+
+  </script>
+</body>
+</html>

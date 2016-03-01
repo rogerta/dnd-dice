@@ -1,0 +1,193 @@
+<!--
+Copyright 2014 Roger Tawa
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+<title>D&amp;D Dice Demo</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="//fonts.googleapis.com/css?family=RobotoDraft:300,400,500|Source+Code+Pro:400,500,700" rel="stylesheet">
+
+<script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+<link rel="import" href="../../dnd-dice/dnd-dice-panel.html">
+<link rel="import" href="../../dnd-dice/dnd-dice-preset.html">
+<link rel="import" href="../../dnd-dice/dnd-dice-result.html">
+<link rel="import" href="../../dnd-dice/dnd-dice-standard.html">
+
+<style>
+body {
+  font-family: "RobotoDraft",Helvetica,Arial,sans-serif;
+}
+dt {
+  font-weight: bold;
+  margin-left: 1em;
+}
+dt:not(:first-child) {
+  margin-top: 0.75em;
+}
+dd {
+  width: 85%;
+  margin-left: 2em;
+}
+code {
+  color: #181;
+}
+.controls {
+  margin-top: 8px;
+}
+#div-result-1 {
+  float: left;
+  margin-bottom: 32px;
+}
+#result1 {
+  width: 250px;
+  height: 200px;
+}
+#div-result-2 {
+  float: left;
+  margin-left: 32px;
+}
+#result2 {
+  width: 150px;
+  height: 120px;
+}
+#result2 #button {
+  background: #33d;
+  color: white;
+  font-size: 400%;
+}
+#pressed, #preset-pressed {
+  background: #ffa;
+  padding: 0.25em;
+  border-radius: 3px;
+  margin-left: 0.25em;
+}
+dnd-dice-preset[name=n] {
+  margin-top: 32px;
+}
+dnd-dice-preset[name=n] paper-button {
+  background: #3b3;
+  color: white;
+}
+
+@media (max-width: 480px) {
+#div-result-1 {
+  float: none;
+}
+#div-result-2 {
+  margin-top: 32px;
+  margin-left: 0;
+  float: none;
+}
+}
+</style>
+</head>
+<body unresolved>
+<h1>D&amp;D Dice Demos</h1>
+<p>
+This page contains demos of the D&amp;D dice web components.
+Check out the source of this page to see how they work.
+For detailed information see the
+<a href="https://github.com/rogerta/dnd-dice">github project</a>.
+</p>
+
+<!-- Example of <dnd-dice-result> -->
+<h2 id="demo-result">D&amp;D Dice Result</h2>
+<div id="div-result-1">
+  <dnd-dice-result id="result1"></dnd-dice-result>
+  <div class="controls">
+    <button onclick="roll3d6()">3d6</button>
+    <button onclick="roll2d4()">2d4 (using setSpec())</button>
+    <button onclick="rollNow()">Roll!</button>
+    <input type="checkbox" name="hide" value="yes"
+        onchange="showOrHideInput()">Hide Input</input>
+  </div>
+</div>
+<div id="div-result-2">
+  <dnd-dice-result id="result2" spec="2d6" hide-input></dnd-dice-result>
+  <div class="controls">
+    This button rolls 2d6
+  </div>
+</div>
+<div style="clear: both;"></div>
+
+
+<!-- Example of <dnd-dice-standard> -->
+<h2 id="demo-standard">Standard D&amp;D Dice</h2>
+<dnd-dice-standard></dnd-dice-standard>
+<div class="controls">Pressed: <span id="pressed">&nbsp;</span></div>
+
+
+<!-- Example of <dnd-dice-preset> -->
+<h2 id="demo-preset">Preset D&amp;D Dice</h2>
+<dnd-dice-preset rows="3"></dnd-dice-preset>
+<div class="controls">(This preset is associated with the first dice result)</div>
+<div>Pressed: <span id="preset-pressed"></span></div>
+
+<dnd-dice-preset name="n" rows="1" cols="2"></dnd-dice-preset>
+<div class="controls">(This preset shows a 1x2 grid)</div>
+
+
+<!-- Example of <dnd-dice-panel> -->
+<h2 id="demo-panel">D&amp;D Dice Panel</h2>
+<dnd-dice-panel></dnd-dice-panel>
+
+<script>
+// Functions related to <dnd-dice-result>
+function rollNow() {
+  var result = document.querySelector('#result1');
+  result.roll();
+}
+function roll3d6() {
+  var result = document.querySelector('#result1');
+  result.spec = '3d6';
+}
+function roll2d4() {
+  var result = document.querySelector('#result1');
+  result.setSpec('2d4');
+}
+function showOrHideInput() {
+  var result = document.querySelector('dnd-dice-result');
+  var cb = document.querySelector('input[type=checkbox]');
+  result.hideInput = cb.checked;
+}
+
+// Functions related to <dnd-dice-standard>
+var dice = document.querySelector('dnd-dice-standard');
+var pressed = document.querySelector('#pressed');
+dice.addEventListener('die', function(e) {
+  pressed.innerText = e.detail;
+});
+dice.addEventListener('inc', function(e) {
+  pressed.innerText = 'inc';
+});
+dice.addEventListener('dec', function(e) {
+  pressed.innerText = 'dec';
+});
+
+// Functions related to <dnd-dice-preset>
+var preset = document.querySelector('dnd-dice-preset');
+var presetPressed = document.querySelector('#preset-pressed');
+preset.addEventListener('spec', function(e) {
+  presetPressed.innerText = e.detail;
+});
+preset.addEventListener('setspec', function(e) {
+  var result = document.querySelector('#result1');
+  preset.setSpec(e.detail, result.spec);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!--
+Copyright 2014 Roger Tawa
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`<dnd-dice-helper>` contains helper functions to parse and unparse dice
+specifications as well as generating random rolls of dice.  Dice specification
+strings are quite flexible and compact, see the
+[full specification](https://github.com/rogerta/dnd-dice#simple-dice-specification)
+for details.  Use the helper like this:
+
+In html:
+
+    <dnd-dice-helper id="helper"></dnd-dice-helper>
+
+In javascript code:
+
+    var dice = this.$.helper.parseSpec("3d6");
+    var value = this.$.helper.roll(dice);  // a value between 3 and 18
+
+@demo
+-->
+<dom-module id="dnd-dice-helper">
+  <script>
+    (function() {
+      const PATTERN = /^(\d*)d?(\d*)([\+\-]\d+)?([ul]\d*)?$/i;
+
+      Polymer({
+        is: 'dnd-dice-helper',
+
+        /**
+         * Parses a dice specification string into its corresponding numbers.
+         * The dice specification string can be either simple or advanced.
+         *
+         * An array of four integers is always returned.  If optional parts
+         * of the specification string are missing the corresponding numbers
+         * take on their default values.
+         *
+         * @param {string} spec Dice specification of the form "NdD+MuS".
+         * @return {Array<number>} with four integers: [N,D,M,S].
+         */
+        parseSpec: function(spec) {
+          var result = PATTERN.exec(spec);
+          if (!result || !result[0])
+            return undefined;
+
+          result.shift();
+          result[0] = result[0] ? parseInt(result[0]) : 1;
+          result[1] = result[1] ? parseInt(result[1]) : 8;
+          result[2] = result[2] ? parseInt(result[2]) : 0;
+
+          var r3 = 0;
+          var prefix = result[3] ? result[3].charAt(0) : undefined;
+          if (prefix) {
+            if (result[3].length == 1) {
+              r3 = result[0] - 1;
+            } else {
+              r3 = parseInt(result[3].substring(1));
+            }
+
+            if (r3 < 0 || r3 >= result[0]) {
+              return undefined;
+            } else if (prefix == 'l') {
+              r3 = -r3;
+            }
+          }
+          result[3] = r3;
+
+          if (result[0] < 0 || result[0] > 99 ||
+              result[1] > 100 ||
+              result[2] < -99 || result[2] > 99) {
+            return undefined;
+          }
+
+          return result.slice(0, 4);
+        },
+
+        /**
+         * Converts an array of integers `[N,D,M,S]` into a dice specification
+         * string.  The order if numbers in the array is important.  If `M` is
+         * zero, the modifier is ommitted from the string.  If `S` is zero,
+         * upper/lower is ommitted from the string.
+         *
+         * @param {Array<number>} parsed Array with four integers: [N,D,M,S].
+         * @return {string} specification of the form "NdD+MuS".
+         */
+        unparseSpec: function (parsed) {
+          var spec = parsed[0] + 'd' + parsed[1];
+
+          var mod = parsed[2];
+          if (mod > 0) {
+            spec += '+' + mod;
+          } else if (mod < 0) {
+            spec += mod;
+          }
+
+          var subset = parsed[3];
+          if (subset > 0) {
+            spec += 'u' + subset;
+          } else if (subset < 0) {
+            spec += 'l' + -subset;
+          }
+
+          return spec;
+        },
+
+        /**
+         * Generates a random integer based on array of four integers
+         * `[N,D,M,S]`.
+         *
+         * All four integers must be specified and their order in the array
+         * is important.  See full dice specification for the meaning of the
+         * numbers.  The array passed to this function is usually returned
+         * from `parseSpec()`.
+         *
+         * @param {Array<number>} parsed Array with four integers: [N,D,M,S].
+         * @return {number} value: a random integer based on dice.
+         */
+        roll: function(parsed) {
+          if (!parsed)
+            return '\u2639';
+
+          var count = parsed[0];
+          var die = parsed[1];
+          var total = count;
+
+          if (parsed[3] == 0) {
+            // Each time through the loop will add a number from 0..n-1.
+            // Since we want 1..n, we start total with the count.
+            for (var i = 0; i < count; ++i)
+              total += Math.floor(Math.random() * die);
+          } else {
+            var positive = parsed[3] > 0;
+            var rolls = [];
+            for (var i = 0; i < count; ++i)
+              rolls[i] = Math.floor(Math.random() * die);
+            rolls.sort(function(l, r) {
+              return positive ? (r - l) : (l - r);
+            });
+            var subset = positive ? parsed[3] : -parsed[3];
+            total = subset;
+            for (var i = 0; i < subset; ++i)
+              total += rolls[i];
+          }
+
+          total += parsed[2];
+          return total;
+        }
+      });
+    })();
+  </script>
+</dom-module>

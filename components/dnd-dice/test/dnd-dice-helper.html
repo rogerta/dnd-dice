@@ -1,0 +1,219 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>dnd-dice-helper tests</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <link rel="import" href="../dnd-dice-helper.html">
+
+</head>
+<body>
+
+  <test-fixture id="dndDiceHelper">
+    <template>
+      <dnd-dice-helper></dnd-dice-helper>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('Basic dnd-dice-helper tests', function() {
+      var helper;
+
+      setup(function() {
+        helper = fixture('dndDiceHelper');
+      });
+
+      test('parse N', function() {
+        var dice = helper.parseSpec('d4');
+        expect(dice).to.eql([1, 4, 0, 0]);
+
+        dice = helper.parseSpec('2d4');
+        expect(dice).to.eql([2, 4, 0, 0]);
+
+        dice = helper.parseSpec('200d4');
+        expect(dice).to.be.undefined;
+
+        dice = helper.parseSpec('0d4');
+        expect(dice).to.eql([0, 4, 0, 0]);
+      });
+
+      test('parse D', function() {
+        var dice = helper.parseSpec('d6');
+        expect(dice).to.eql([1, 6, 0, 0]);
+
+        dice = helper.parseSpec('d42');
+        expect(dice).to.eql([1, 42, 0, 0]);
+
+        dice = helper.parseSpec('d200');
+        expect(dice).to.be.undefined;
+
+        dice = helper.parseSpec('d0');
+        expect(dice).to.eql([1, 0, 0, 0]);
+      });
+
+      test('parse upper D', function() {
+        var dice = helper.parseSpec('D6');
+        expect(dice).to.eql([1, 6, 0, 0]);
+      });
+
+      test('parse M', function() {
+        var dice = helper.parseSpec('d8');
+        expect(dice).to.eql([1, 8, 0, 0]);
+
+        dice = helper.parseSpec('d8+1');
+        expect(dice).to.eql([1, 8, 1, 0]);
+
+        dice = helper.parseSpec('d8-1');
+        expect(dice).to.eql([1, 8, -1, 0]);
+
+        dice = helper.parseSpec('d8+200');
+        expect(dice).to.be.undefined;
+
+        dice = helper.parseSpec('d8-200');
+        expect(dice).to.be.undefined;
+      });
+
+      test('parse U', function() {
+        var dice = helper.parseSpec('0d10u');
+        expect(dice).to.be.undefined;
+
+        var dice = helper.parseSpec('d10u');
+        expect(dice).to.eql([1, 10, 0, 0]);
+
+        var dice = helper.parseSpec('2d10u');
+        expect(dice).to.eql([2, 10, 0, 1]);
+
+        var dice = helper.parseSpec('3d10u');
+        expect(dice).to.eql([3, 10, 0, 2]);
+
+        var dice = helper.parseSpec('3d10u1');
+        expect(dice).to.eql([3, 10, 0, 1]);
+
+        var dice = helper.parseSpec('3d10u0');
+        expect(dice).to.eql([3, 10, 0, 0]);
+
+        var dice = helper.parseSpec('3d10u3');
+        expect(dice).to.be.undefined;
+
+        var dice = helper.parseSpec('3d10u4');
+        expect(dice).to.be.undefined;
+      });
+
+      test('parse L', function() {
+        var dice = helper.parseSpec('0d12l');
+        expect(dice).to.be.undefined;
+
+        // TODO(rogerta): why does 0 != -0 in this test?
+
+        var dice = helper.parseSpec('d12l');
+        expect(dice).to.eql([1, 12, 0, -0]);
+
+        var dice = helper.parseSpec('2d12l');
+        expect(dice).to.eql([2, 12, 0, -1]);
+
+        var dice = helper.parseSpec('3d12l');
+        expect(dice).to.eql([3, 12, 0, -2]);
+
+        var dice = helper.parseSpec('3d12l1');
+        expect(dice).to.eql([3, 12, 0, -1]);
+
+        var dice = helper.parseSpec('3d12l0');
+        expect(dice).to.eql([3, 12, 0, -0]);
+
+        var dice = helper.parseSpec('3d12l3');
+        expect(dice).to.be.undefined;
+
+        var dice = helper.parseSpec('3d12l4');
+        expect(dice).to.be.undefined;
+      });
+
+      test('parse no D', function() {
+        var dice = helper.parseSpec('1');
+        expect(dice).to.eql([1, 8, 0, 0]);
+
+        var dice = helper.parseSpec('1+1');
+        expect(dice).to.eql([1, 8, 1, 0]);
+
+        var dice = helper.parseSpec('1-2');
+        expect(dice).to.eql([1, 8, -2, 0]);
+
+        var dice = helper.parseSpec('+3');
+        expect(dice).to.eql([1, 8, 3, 0]);
+
+        var dice = helper.parseSpec('4u3');
+        expect(dice).to.eql([4, 8, 0, 3]);
+
+        var dice = helper.parseSpec('u');
+        expect(dice).to.eql([1, 8, 0, 0]);
+
+        var dice = helper.parseSpec('l');
+        expect(dice).to.eql([1, 8, 0, -0]);
+      });
+
+      test('parse invalid', function() {
+        var dice = helper.parseSpec('');
+        expect(dice).to.be.undefined;
+
+        dice = helper.parseSpec('foo');
+        expect(dice).to.be.undefined;
+      });
+
+      test('parse negative', function() {
+        var dice = helper.parseSpec('-d6');
+        expect(dice).to.be.undefined;
+
+        var dice = helper.parseSpec('-3d6');
+        expect(dice).to.be.undefined;
+
+        var dice = helper.parseSpec('d-6');
+        expect(dice).to.eql([1, 8, -6, 0]);
+
+        var dice = helper.parseSpec('d6u-2');
+        expect(dice).to.be.undefined;
+
+        var dice = helper.parseSpec('d6l-2');
+        expect(dice).to.be.undefined;
+      });
+
+      test('parse negative', function() {
+        // unparse does not check for consistency of values.
+
+        var spec = helper.unparseSpec([1, 2, 3, 4]);
+        expect(spec).to.equal('1d2+3u4');
+
+        spec = helper.unparseSpec([1, 2, -6, 4]);
+        expect(spec).to.equal('1d2-6u4');
+
+        spec = helper.unparseSpec([1, 2, 0, 4]);
+        expect(spec).to.equal('1d2u4');
+
+        spec = helper.unparseSpec([1, 2, 0, -5]);
+        expect(spec).to.equal('1d2l5');
+
+        spec = helper.unparseSpec([1, 2, 0, 0]);
+        expect(spec).to.equal('1d2');
+
+        spec = helper.unparseSpec([1, 2, 7, 0]);
+        expect(spec).to.equal('1d2+7');
+
+        spec = helper.unparseSpec([1, 2, -8, 0]);
+        expect(spec).to.equal('1d2-8');
+      });
+    });
+
+  </script>
+</body>
+</html>

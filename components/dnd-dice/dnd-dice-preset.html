@@ -1,0 +1,194 @@
+<!--
+Copyright 2014 Roger Tawa
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../paper-button/paper-button.html">
+
+<!--
+`<dnd-dice-preset>` shows a grid of buttons for throwing custom dice,
+like 2d4-1 or 3d6.  The rows and columns of the grid can be specified with the
+|rows| and |cols| attributes (4x4 by default).
+
+Clicking a button fires a 'spec' event.  The event |detail| contains the dice
+specification attached to the button.  Long clicking a button (clicking the
+button and holding it down for 1 second) fires a 'setspec' event.  This can
+be used to attach a dice specification to the button with the |setSpec()|
+method.  The |detail| of the 'setspec' even must be passed as the |sender|
+parameter of |setSpec()|.
+
+`<dnd-dice-preset>` persists attached dice specifications to local storage.
+When the page is reloaded, so are the dice specifications.  By default, all
+instances of <dnd-dice-preset> will load from the same persisted data.
+To use a different specifications with different presets, use different
+|name| attributes.
+
+Examples:
+
+   <dnd-dice-result rows="1" cols="3"></dnd-dice-result>
+   <dnd-dice-result name="demo"></dnd-dice-result>
+
+@demo
+-->
+<dom-module id="dnd-dice-preset">
+  <template>
+    <style>
+    :host {
+      display: inline-block;
+    }
+    [row]+[row] {
+      margin-top: 0.5em;
+    }
+    paper-button {
+      text-transform: none;
+      margin: 0px;
+      min-width: 1em;
+      width: 5em;
+    }
+    paper-button+paper-button {
+      margin-left: 0.5em;
+    }
+    </style>
+    <div>
+      <template id="values" is="dom-repeat" items="[[_values]]" index-as="r">
+        <div class="horizontal layout" row>
+          <!-- See setSpec() below for details of id -->
+          <template is="dom-repeat" items="[[item]]" index-as="c">
+            <paper-button id="_values.[[r]].[[c]]" raised noink
+                on-tap="_fireSpec" on-down="_onMouseDown"
+                on-up="_onMouseUp">[[item.value]]</paper-button>
+          </template>
+        </div>
+      </template>
+      <iron-localstorage name="[[name]]-dice-presets" value="{{_values}}"
+          on-iron-localstorage-load="_onPresetsLoaded"
+          on-iron-localstorage-load-empty="_onPresetsEmpty"></iron-localstorage>
+    </div>
+  </template>
+  <script>
+    (function() {
+      var pendingAsync_ = undefined;
+
+      Polymer({
+        is: 'dnd-dice-preset',
+
+        properties: {
+          /** The number of rows in the preset grid. */
+          rows: {type: Number, value: 4},
+          /** The number of columns in the preset grid. */
+          cols: {type: Number, value: 4},
+          /** The name of the local storage object that saves the presets. */
+          name: {type: String, value: 'dice-preset'},
+          /** The array of preset dice specifications. There are `row * cols`
+           * values stored in row major format. */
+          _values: {type: Array, value: undefined},
+          /** Long press delay in msec.  Exposed for testing only. */
+          _delay: {type: Number, value: 1000}
+        },
+
+        _fireSpec: function(e, detail) {
+          this.fire('spec', e.currentTarget.innerText);
+        },
+
+        _onPresetsLoaded: function() {
+          if (!this._values instanceof Array) {
+            this._values = undefined;
+            this._onPresetsEmpty();
+            return;
+          }
+
+          this.rows = this._values ? this._values.length : 0;
+          this.cols = this.rows > 0 ? this._values[0].length : 0;
+        },
+
+        _onPresetsEmpty: function() {
+          if (!this._values)
+            this._recalcMatrix();
+        },
+
+        _recalcMatrix: function() {
+          this.debounce('recalc', function() {
+            var values = [];
+            for (var r = 0; r < this.rows; ++r) {
+              var row = [];
+              for (var c = 0; c < this.cols; ++c)
+                row.push({value: '\u00a0'});
+              values[r] = row;
+            }
+            this.set('_values', values);
+          });
+        },
+
+        _onMouseDown: function(e) {
+          var sender = e.currentTarget;
+          pendingAsync_ = sender;
+          this.async(function() {
+            if (sender != pendingAsync_)
+              return;
+            this.fire('setspec', sender);
+          }, this._delay);
+        },
+
+        _onMouseUp: function(e) {
+          pendingAsync_ = undefined;
+        },
+
+        /**
+         * Attaches a dice specification to a given button.
+         *
+         * @param {Element} sender `<paper-button>` to attach the specification
+         *     to.  This argument should the the `detail` member of the event
+         *     when handling the `setspec` event.
+         * @param {string} spec Dice specification of the form "NdD+MuS".
+         */
+        setSpec: function(sender, spec) {
+          spec = spec.trim();
+          if (spec.length == 0)
+            return;
+
+          // NOTE: the id of |sender| must be a format that is understood by
+          // the set() method.  To set the value of an element in an array use
+          // the syntax '<array>.<index>' where <array> is the path to the
+          // array property and <index> is a decimal number of the index to set.
+          //
+          // In this case, |_values| is a matrix, i.e. an array of arrays.  So
+          // the path to the matrix is '_values'.  The path to row |r| becomes
+          // '_values.r'.  Finally, the path to element |c| of row |r| becomes
+          // '_values.r.c'.  To keep things simple, the id of the sender is
+          // formatted in the template above to repect this pattern.
+          //
+          // Due to a problem with the way property notifications of primitive
+          // elements of arrays are handled, the strings are wrapped in
+          // objeects: https://github.com/Polymer/polymer/issues/2667
+          this.set(sender.id, {value: spec});
+        }
+
+        /**
+         * Fired when a preset button is clicked.
+         * @event spec
+         * @param {string} detail Dice specification of the form "NdD+MuS".
+         */
+
+        /**
+         * Fired when a preset button is long clicked.
+         * @event setspec
+         * @param {Element} detail `<paper-button>` that was long clicked.
+         */
+      });
+    })();
+  </script>
+</dom-module>

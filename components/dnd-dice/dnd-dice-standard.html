@@ -1,0 +1,118 @@
+<!--
+Copyright 2014 Roger Tawa
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../paper-button/paper-button.html">
+
+<!--
+`<dnd-dice-standard>` shows a grid of `<paper-button>`s that can roll the
+standard D&D dice.  Included are buttons to increment and decrement
+the dice modifier.  Normally, `<dnd-dice-standard>` is used together with
+a `<dnd-dice-result>` element.
+
+### Styling
+
+The `<paper-button>` elements can be styled using standard mechanisms.
+For example:
+
+    #my-dnd-dice-standard paper-button {
+      /* styles for paper-button */
+    }
+
+@demo
+-->
+
+<dom-module id="dnd-dice-standard">
+  <template>
+    <style>
+    :host {
+      display: inline-block;
+    }
+    [row]+[row] {
+      margin-top: 0.5em;
+    }
+    paper-button {
+      text-transform: none;
+      margin: 0px;
+      min-width: 1em;
+    }
+    [die] {
+      width: 5em;
+    }
+    [die]+[die] {
+      margin-left: 0.5em;
+    }
+    div[die] {
+      display: inline-block;
+    }
+    [mod] {
+      width: 4em;
+    }
+    [mod]+[mod] {
+      margin-left: 0.5em;
+    }
+    </style>
+    <div class="horizontal layout" row>
+      <paper-button raised noink die on-tap="_fireDie">d4</paper-button>
+      <paper-button raised noink die on-tap="_fireDie">d6</paper-button>
+    </div>
+    <div class="horizontal layout" row>
+      <paper-button raised noink die on-tap="_fireDie">d8</paper-button>
+      <paper-button raised noink die on-tap="_fireDie">d10</paper-button>
+    </div>
+    <div class="horizontal layout" row>
+      <paper-button raised noink die on-tap="_fireDie">d12</paper-button>
+      <paper-button raised noink die on-tap="_fireDie">d20</paper-button>
+    </div>
+    <div class="horizontal layout" row>
+      <paper-button raised noink die on-tap="_fireDie">d100</paper-button>
+      <div die class="horizontal layout">
+        <paper-button raised noink mod plus on-tap="_fireMod">+</paper-button>
+        <paper-button raised noink mod minus on-tap="_fireMod">-</paper-button>
+      </div>
+    </div>
+  </template>
+  <script>
+    (function() {
+      var _lastClickTime = 0;
+      var _lastDie = undefined;
+      var _lastCount = 1;
+
+      Polymer({
+        is: 'dnd-dice-standard',
+
+        _fireDie: function(e) {
+          var sender = e.currentTarget;
+          if ((e.timeStamp - _lastClickTime < 400) &&
+              (_lastDie == sender.innerText)) {
+            ++_lastCount;
+          } else {
+            _lastDie = sender.innerText;
+            _lastCount = 1;
+          }
+          this.fire('die', _lastCount + sender.innerText);
+          _lastClickTime = e.timeStamp;
+        },
+
+        _fireMod: function(e) {
+          this.fire(e.currentTarget.innerText == '+' ? 'inc' : 'dec');
+        }
+      });
+    })();
+  </script>
+</dom-module>

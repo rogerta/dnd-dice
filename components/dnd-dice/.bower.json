@@ -1,0 +1,28 @@
+{
+  "name": "dnd-dice",
+  "private": false,
+  "dependencies": {
+    "paper-button": "PolymerElements/paper-button#~1.0.11",
+    "paper-input": "PolymerElements/paper-input#~1.1.3",
+    "iron-localstorage": "PolymerElements/iron-localstorage#~1.0.5",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#~1.2.2"
+  },
+  "resolutions": {
+    "polymer": "^1.2.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.1.4",
+    "web-component-tester": "Polymer/web-component-tester#^4.2.1"
+  },
+  "homepage": "https://github.com/rogerta/dnd-dice",
+  "_release": "8bd014168b",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "8bd014168b215ae5d31b8f2d9e3cfa14b10f1d1e"
+  },
+  "_source": "git://github.com/rogerta/dnd-dice.git",
+  "_target": "master",
+  "_originalSource": "rogerta/dnd-dice",
+  "_direct": true
+}

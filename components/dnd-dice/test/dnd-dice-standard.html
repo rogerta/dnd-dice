@@ -1,0 +1,111 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>dnd-dice-standard tests</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <link rel="import" href="../dnd-dice-standard.html">
+
+</head>
+<body>
+
+  <test-fixture id="dndDiceStandard">
+    <template>
+      <dnd-dice-standard></dnd-dice-standard>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('Basic dnd-dice-standard tests', function() {
+      var standard;
+      var buttons;
+      var count;
+      var incCount;
+      var decCount;
+      var detail;
+
+      setup(function() {
+        standard = fixture('dndDiceStandard');
+        buttons = standard.getElementsByTagName('paper-button');
+        count = 0;
+        incCount = 0;
+        decCount = 0;
+        detail = undefined;
+        expect(buttons.length).to.equal(9);
+        standard.addEventListener('die', function(e) {
+          ++count;
+          detail = e.detail;
+        });
+        standard.addEventListener('inc', function(e) {
+          ++incCount;
+          detail = e.detail;
+        });
+        standard.addEventListener('dec', function(e) {
+          ++decCount;
+          detail = e.detail;
+        });
+      });
+
+      test('Clicking die fires event', function() {
+        buttons[0].click();
+        expect(count).to.equal(1);
+        expect(detail).to.equal("1d4");
+      });
+
+      test('Clicking modifier fires event', function() {
+        buttons[7].click();
+        expect(incCount).to.equal(1);
+        buttons[8].click();
+        expect(decCount).to.equal(1);
+      });
+
+      test('Multi-clicking die fires events with increasing N', function() {
+        buttons[1].click();
+        expect(count).to.equal(1);
+        expect(detail).to.equal("1d6");
+        buttons[1].click();
+        expect(count).to.equal(2);
+        expect(detail).to.equal("2d6");
+        buttons[1].click();
+        expect(count).to.equal(3);
+        expect(detail).to.equal("3d6");
+      });
+
+      test('Multi-clicking different die does not increase N', function() {
+        buttons[2].click();
+        expect(count).to.equal(1);
+        expect(detail).to.equal("1d8");
+        buttons[3].click();
+        expect(count).to.equal(2);
+        expect(detail).to.equal("1d10");
+      });
+
+      test('Slow clicking does not increase N', function() {
+        standard._fireDie({currentTarget: {innerText: "d6"}, timeStamp: 0});
+        expect(count).to.equal(1);
+        expect(detail).to.equal("1d6");
+
+        // The multi-click delay is 400ms, so make the simulated event just
+        // a bit longer.
+        standard._fireDie({currentTarget: {innerText: "d6"}, timeStamp: 401});
+        expect(count).to.equal(2);
+        expect(detail).to.equal("1d6");
+      });
+    });
+
+  </script>
+</body>
+</html>
