@@ -68,7 +68,7 @@ In javascript code:
           if (prefix) {
             if (result[3].length == 1) {
               r3 = result[0] - 1;
-            } else if (prefix) {
+            } else {
               r3 = parseInt(result[3].substring(1));
             }
 
@@ -86,7 +86,7 @@ In javascript code:
             return undefined;
           }
 
-          return result;
+          return result.slice(0, 4);
         },
 
         /**

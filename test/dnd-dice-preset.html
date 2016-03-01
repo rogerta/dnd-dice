@@ -71,15 +71,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           expect(preset._values[0][0]).to.have.property('value')
               .to.equal('1d6');
 
-          preset.setSpec(sender, " 2d6  ");
+          preset.setSpec(sender, ' 2d6  ');
           expect(preset._values[0][0]).to.have.property('value')
               .to.equal('2d6');
 
-          preset.setSpec(sender, "");
+          preset.setSpec(sender, '');
           expect(preset._values[0][0]).to.have.property('value')
               .to.equal('2d6');
 
-          preset.setSpec(sender, "  ");
+          preset.setSpec(sender, '  ');
           expect(preset._values[0][0]).to.have.property('value')
               .to.equal('2d6');
         } ,1);

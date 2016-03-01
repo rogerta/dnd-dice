@@ -1,0 +1,142 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>dnd-dice-result tests</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <link rel="import" href="../dnd-dice-result.html">
+
+</head>
+<body>
+
+  <test-fixture id="dndDiceResult">
+    <template>
+      <dnd-dice-result></dnd-dice-result>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="dndDiceResultWithSpec">
+    <template>
+      <dnd-dice-result spec="3d6"></dnd-dice-result>
+    </template>
+  </test-fixture>
+
+  <test-fixture id="dndDiceResultNoInput">
+    <template>
+      <dnd-dice-result hide-input></dnd-dice-result>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('Basic dnd-dice-result tests', function() {
+      var result;
+
+      setup(function() {
+        result = fixture('dndDiceResult');
+      });
+
+      test('Spec starts out blank', function() {
+        expect(result.getValidSpec()).to.equal(undefined);
+        result.roll();
+        expect(result.$.button.innerText).to.equal('\u00a0');
+      });
+
+      test('Setting spec property rolls', function() {
+        result.spec = '1d4';
+        expect(result.getValidSpec()).to.equal('1d4');
+        expect(result.$.button.innerText).to.not.equal('');
+      });
+
+      test('Setting spec twice does not roll', function() {
+        result.spec = '1d4';
+        expect(result.$.button.innerText).to.not.equal('');
+
+        // Change the inner text of the button to make sure that spec=...
+        // will really not change the text.  Must use upper case text since
+        // the paper-button uses a text filter that converts to that case.
+        result.$.button.innerText = 'NO-RESULT';
+        result.spec = '1d4';
+        expect(result.$.button.innerText).to.equal('NO-RESULT');
+      });
+
+      test('Setting different spec always rolls', function() {
+        result.spec = '1d4';
+        var previousValue = result.$.button.innerText;
+        expect(previousValue).to.not.equal('');
+
+        for (var i = 4; i < 100; i += 4) {
+          result.spec = '1d4+' + i;
+          expect(result.$.button.innerText).to.not.equal(previousValue);
+          previousValue = result.$.button.innerText;
+        }
+      });
+
+      test('setSpec always rolls', function() {
+        result.setSpec('99d100');
+        expect(result.$.button.innerText).to.not.equal('');
+
+        for (var i = 0; i < 100; i += 4) {
+          // Change the inner text of the button to make sure that setSpec()
+          // will really change the text.  Must use upper case text since
+          // the paper-button uses a text filter that converts to that case.
+          result.$.button.innerText = 'NO-RESULT';
+          result.setSpec('99d100');
+          expect(result.$.button.innerText).to.not.equal('NO-RESULT');
+        }
+      });
+
+      test('Inc and dec change spec', function() {
+        // If spec is undefined, it stays undefined.
+        result.inc();
+        expect(result.getValidSpec()).to.equal(undefined);
+
+        result.spec = '1d4';
+        expect(result.getValidSpec()).to.equal('1d4');
+        result.inc();
+        expect(result.getValidSpec()).to.equal('1d4+1');
+        result.dec();
+        expect(result.getValidSpec()).to.equal('1d4');
+        result.dec();
+        expect(result.getValidSpec()).to.equal('1d4-1');
+      });
+    });
+
+    suite('dnd-dice-result spec', function() {
+      var result;
+
+      setup(function() {
+        result = fixture('dndDiceResultWithSpec');
+      });
+
+      test('Spec set in html', function() {
+        expect(result.getValidSpec()).to.equal('3d6');
+      });
+    });
+
+    suite('dnd-dice-result no input', function() {
+      var result;
+
+      setup(function() {
+        result = fixture('dndDiceResultNoInput');
+      });
+
+      test('Input field is not visible', function() {
+        expect(result.$.input).to.equal(undefined);
+      });
+    });
+  </script>
+</body>
+</html>
