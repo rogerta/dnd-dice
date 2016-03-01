@@ -40,6 +40,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       setup(function() {
         preset = fixture('dndDicePreset');
+        // Change the long press delay to something really short so that tests
+        // can be kept fast.
+        preset._delay = 5;
       });
 
       teardown(function() {
@@ -110,7 +113,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         Polymer.Base.async(function() {
           done();
-        }, 1001);
+        }, preset._delay + 1);
       });
     });
 

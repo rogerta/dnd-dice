@@ -95,7 +95,9 @@ Examples:
           name: {type: String, value: 'dice-preset'},
           /** The array of preset dice specifications. There are `row * cols`
            * values stored in row major format. */
-          _values: {type: Array, value: undefined}
+          _values: {type: Array, value: undefined},
+          /** Long press delay in msec.  Exposed for testing only. */
+          _delay: {type: Number, value: 1000}
         },
 
         _fireSpec: function(e, detail) {
@@ -138,7 +140,7 @@ Examples:
             if (sender != pendingAsync_)
               return;
             this.fire('setspec', sender);
-          }, 1000);
+          }, this._delay);
         },
 
         _onMouseUp: function(e) {
