@@ -112,7 +112,7 @@ dice specifications are equivalent to the previous three, respectively:
 # Demos
 
 See [demos of all the components](http://rogerta.github.io/dnd-dice/components/dnd-dice/demo/).
-A much [fancier demo](http://dnd-tools.appspot.com/dice) also exists.
+A much [fancier demo](https://6-dot-dnd-tools.appspot.com/dice) also exists.
 
 [Unit tests](http://rogerta.github.io/dnd-dice/components/dnd-dice/test/)
 
