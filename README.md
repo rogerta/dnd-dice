@@ -1,8 +1,8 @@
 # D&D Dice Web Components
 
 This package contains [Polymer](https://www.polymer-project.org/)-based
-[web components](http://webcomponents.org/) for including
-[D&D](http://www.wizards.com/dnd/) style dice rolling into web applications.
+[web components](https://webcomponents.org/) for including
+[D&D](https://www.wizards.com/dnd/) style dice rolling into web applications.
 Use the fully-featured panel to easily add dice rolling, or use the individual
 components to build just the UI you need.
 
@@ -111,8 +111,8 @@ dice specifications are equivalent to the previous three, respectively:
 
 # Demos
 
-See [demos of all the components](http://rogerta.github.io/dnd-dice/components/dnd-dice/demo/).
+See [demos of all the components](https://rogerta.github.io/dnd-dice/components/dnd-dice/demo/).
 A much [fancier demo](https://6-dot-dnd-tools.appspot.com/dice) also exists.
 
-[Unit tests](http://rogerta.github.io/dnd-dice/components/dnd-dice/test/)
+[Unit tests](https://rogerta.github.io/dnd-dice/components/dnd-dice/test/)
 
